@@ -4,7 +4,8 @@ import { RHFTextField } from '../../../components/form';
 import { HtmlPreview } from '../../../components/HtmlPreview';
 import { sectionField, useContentForm } from '../form';
 import { AiAssistedField } from './AiAssistedField';
-import { SectionPanel } from './SectionPanel';
+import { SectionBodyEditor } from './SectionBodyEditor';
+import { SectionPanel, TabUpdatedAtField } from './SectionPanel';
 import { SectionTabs } from './SectionTabs';
 
 type Props = {
@@ -32,9 +33,14 @@ export function ContentTab({ sectionIndex, onSectionChange }: Props) {
 
       <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
         <SectionTabs value={sectionIndex} onChange={onSectionChange} />
-        <Stack sx={{ p: 2 }}>
-          {/* key 切换时重新挂载，各 section 的字段互不干扰 */}
+        <Stack spacing={2} sx={{ p: 2 }} role="tabpanel">
+          {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
           <SectionPanel key={sectionIndex} index={sectionIndex} />
+          {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
+          <SectionBodyEditor
+            index={sectionIndex}
+            toolbarStart={<TabUpdatedAtField key={sectionIndex} index={sectionIndex} />}
+          />
         </Stack>
       </Paper>
 

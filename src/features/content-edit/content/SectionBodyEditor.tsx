@@ -1,30 +1,27 @@
 import { useRef, useState, type ReactNode } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { Box, Button, IconButton, Stack, Tooltip } from "@mui/material";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import { DiffEditor, type OnMount } from "@monaco-editor/react";
-import { useWatch } from "react-hook-form";
-import type { editor } from "monaco-editor";
-import { RHFCodeEditor } from "../../../components/form";
-import { HtmlPreview } from "../../../components/HtmlPreview";
+import type { OnMount } from "@monaco-editor/react";
+import type { ClassicEditor } from "ckeditor5";
+import { RHFCodeEditor, RHFRichTextEditor } from "../../../components/form";
 import { sectionField, useContentForm } from "../form";
 
+/**
+ * 正文编辑器：
+ * - source 模式：Monaco（HTML 源码）。切换 section 时复用同一实例，只切换 model（path）
+ * - wysiwyg 模式：CKEditor 5
+ * 两个编辑器都是非受控的，切换模式时卸载的一方会先把内容写回表单。
+ */
 type Props = {
   index: number;
   /** 工具栏左侧内容（タブ更新日時 等） */
   toolbarStart?: ReactNode;
 };
 
-type Mode = "source" | "preview";
+type Mode = "source" | "wysiwyg";
+
+type InsertHtml = (html: string) => void;
 
 export function SectionBodyEditor({ index, toolbarStart }: Props) {
   const { control } = useContentForm();
@@ -32,19 +29,31 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
 
   const [mode, setMode] = useState<Mode>("source");
   const [fullscreen, setFullscreen] = useState(false);
-  const [diffOpen, setDiffOpen] = useState(false);
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  /** 当前编辑器的「在光标处插入 HTML」实现，由各编辑器就绪时注册 */
+  const insertHtmlRef = useRef<InsertHtml | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleMount: OnMount = (ed) => {
-    editorRef.current = ed;
+  const handleMonacoMount: OnMount = (ed) => {
+    insertHtmlRef.current = (html) => {
+      const selection = ed.getSelection();
+      if (!selection) return;
+      ed.executeEdits("file-insert", [
+        { range: selection, text: html, forceMoveMarkers: true },
+      ]);
+      ed.focus();
+    };
+  };
+
+  const handleCkEditorReady = (editor: ClassicEditor) => {
+    insertHtmlRef.current = (html) => {
+      const viewFragment = editor.data.processor.toView(html);
+      editor.model.insertContent(editor.data.toModel(viewFragment));
+      editor.editing.view.focus();
+    };
   };
 
   // TODO: 实际上传文件后，用服务器返回的 URL 替换文件名
   const insertFiles = (files: FileList) => {
-    const ed = editorRef.current;
-    const selection = ed?.getSelection();
-    if (!ed || !selection) return;
     const html = Array.from(files)
       .map((f) =>
         f.type.startsWith("image/")
@@ -52,10 +61,12 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
           : `<a href="${f.name}">${f.name}</a>`,
       )
       .join("\n");
-    ed.executeEdits("file-insert", [
-      { range: selection, text: html, forceMoveMarkers: true },
-    ]);
-    ed.focus();
+    insertHtmlRef.current?.(html);
+  };
+
+  const switchMode = () => {
+    insertHtmlRef.current = null;
+    setMode((m) => (m === "source" ? "wysiwyg" : "source"));
   };
 
   const height = fullscreen ? "calc(100vh - 72px)" : 480;
@@ -82,20 +93,13 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
             {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
           </IconButton>
         </Tooltip>
-        <Button
-          variant="contained"
-          onClick={() =>
-            setMode((m) => (m === "source" ? "preview" : "source"))
-          }
-        >
+        <Button variant="contained" onClick={switchMode}>
           表示切替
         </Button>
-        <Button variant="contained" onClick={() => setDiffOpen(true)}>
-          比較
-        </Button>
+        {/* TODO: 比較（保存済みの内容との差分表示） */}
+        <Button variant="contained">比較</Button>
         <Button
           variant="contained"
-          disabled={mode !== "source"}
           onClick={() => fileInputRef.current?.click()}
         >
           ファイル挿入
@@ -119,61 +123,17 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
             name={name}
             height={height}
             path={`section-${index}.html`}
-            onMount={handleMount}
+            onMount={handleMonacoMount}
           />
         ) : (
-          <BodyPreview index={index} height={height} />
+          <RHFRichTextEditor
+            control={control}
+            name={name}
+            height={height}
+            onReady={handleCkEditorReady}
+          />
         )}
       </Box>
-
-      {diffOpen && (
-        <BodyDiffDialog index={index} onClose={() => setDiffOpen(false)} />
-      )}
     </Box>
-  );
-}
-
-function BodyPreview({
-  index,
-  height,
-}: {
-  index: number;
-  height: number | string;
-}) {
-  const { control } = useContentForm();
-  const html = useWatch({ control, name: sectionField(index, "body") });
-  return <HtmlPreview html={html} height={height} />;
-}
-
-/** 与初始值（加载时的内容）比较 */
-function BodyDiffDialog({
-  index,
-  onClose,
-}: {
-  index: number;
-  onClose: () => void;
-}) {
-  const { getValues, formState } = useContentForm();
-  const original =
-    formState.defaultValues?.content?.sections?.[index]?.body ?? "";
-  const modified = getValues(sectionField(index, "body"));
-
-  return (
-    <Dialog open fullWidth maxWidth="xl" onClose={onClose}>
-      <DialogTitle>比較（左：保存済み / 右：編集中）</DialogTitle>
-      <DialogContent>
-        <DiffEditor
-          height="70vh"
-          language="html"
-          original={original}
-          modified={modified}
-          options={{
-            readOnly: true,
-            renderSideBySide: true,
-            minimap: { enabled: false },
-          }}
-        />
-      </DialogContent>
-    </Dialog>
   );
 }

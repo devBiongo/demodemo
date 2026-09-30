@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
-import { Box, CircularProgress } from '@mui/material';
 import type { EditorProps, OnMount } from '@monaco-editor/react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { EditorFallback } from '../EditorFallback';
 
 export type RHFCodeEditorProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -15,7 +15,7 @@ export type RHFCodeEditorProps<T extends FieldValues> = {
   path: string;
   onMount?: OnMount;
   options?: EditorProps['options'];
-  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 path / 卸载时会立即写回 */
+  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 卸载时会立即写回 */
   debounceMs?: number;
 };
 
@@ -27,13 +27,5 @@ export function RHFCodeEditor<T extends FieldValues>(props: RHFCodeEditorProps<T
     <Suspense fallback={<EditorFallback height={props.height} />}>
       <Impl {...(props as unknown as RHFCodeEditorProps<FieldValues>)} />
     </Suspense>
-  );
-}
-
-export function EditorFallback({ height }: { height: EditorProps['height'] }) {
-  return (
-    <Box sx={{ height, display: 'grid', placeItems: 'center' }}>
-      <CircularProgress size={24} />
-    </Box>
   );
 }
