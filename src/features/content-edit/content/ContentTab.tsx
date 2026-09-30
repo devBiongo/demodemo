@@ -21,7 +21,10 @@ type Props = {
 };
 
 // memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
-export const ContentTab = memo(function ContentTab({ sectionIndex, onSectionChange }: Props) {
+export const ContentTab = memo(function ContentTab({
+  sectionIndex,
+  onSectionChange,
+}: Props) {
   const { control } = useContentForm();
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -59,7 +62,10 @@ export const ContentTab = memo(function ContentTab({ sectionIndex, onSectionChan
       <Stack spacing={0.5} useFlexGap sx={{ flex: 1, minHeight: 0 }}>
         <SectionTabs value={sectionIndex} onChange={onSectionChange} />
         {/* 占满剩余高度（底部贴近视口）；放不下时在卡片内部滚动 */}
-        <Paper variant="outlined" sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+        <Paper
+          variant="outlined"
+          sx={{ flex: 1, minHeight: 0, overflowY: "auto", mb: 1 }}
+        >
           {/* useFlexGap：用 gap 实现间距。否则 Stack 给子元素加的 margin-top 会让
               全屏编辑（position: fixed; inset: 0）的编辑器顶部空出 16px */}
           <Stack spacing={2} useFlexGap sx={{ p: 2 }} role="tabpanel">
