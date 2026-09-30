@@ -1,5 +1,5 @@
-import { ContentEditPage } from './features/content-edit/ContentEditPage';
+import { ContentDetailPage } from './features/contentDetail';
 
 export default function App() {
-  return <ContentEditPage />;
+  return <ContentDetailPage />;
 }
