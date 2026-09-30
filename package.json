@@ -19,6 +19,7 @@
     "ckeditor5": "^46.1.1",
     "monaco-editor": "^0.52.2",
     "react": "18.2.0",
+    "react-diff-viewer-continued": "^4.4.0",
     "react-dom": "18.2.0",
     "react-hook-form": "~7.55.0",
     "zod": "^4.6.5"

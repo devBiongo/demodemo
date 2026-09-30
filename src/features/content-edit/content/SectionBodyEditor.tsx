@@ -7,6 +7,7 @@ import type { ClassicEditor } from "ckeditor5";
 import { RHFRichTextEditor } from "../../../components/ckeditor";
 import { RHFCodeEditor } from "../../../components/monaco";
 import { sectionField, useContentForm } from "../form";
+import { CompareDialog } from "./CompareDialog";
 
 /**
  * 正文编辑器：
@@ -30,6 +31,7 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
 
   const [mode, setMode] = useState<Mode>("source");
   const [fullscreen, setFullscreen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
   /** 当前编辑器的「在光标处插入 HTML」实现，由各编辑器就绪时注册 */
   const insertHtmlRef = useRef<InsertHtml | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,8 +99,10 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
         <Button variant="contained" onClick={switchMode}>
           表示切替
         </Button>
-        {/* TODO: 比較（保存済みの内容との差分表示） */}
-        <Button variant="contained">比較</Button>
+        {/* 点击按钮时编辑器失焦，未写回的内容会先写回表单 */}
+        <Button variant="contained" onClick={() => setCompareOpen(true)}>
+          比較
+        </Button>
         <Button
           variant="contained"
           onClick={() => fileInputRef.current?.click()}
@@ -135,6 +139,13 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
           />
         )}
       </Box>
+
+      {compareOpen && (
+        <CompareDialog
+          initialIndex={index}
+          onClose={() => setCompareOpen(false)}
+        />
+      )}
     </Box>
   );
 }
