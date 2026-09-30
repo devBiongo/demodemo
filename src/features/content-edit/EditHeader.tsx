@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useFormState } from 'react-hook-form';
 import { RHFTextField } from '../../components/form';
@@ -8,7 +9,8 @@ type Props = {
   onCancel: () => void;
 };
 
-export function EditHeader({ onDraft, onCancel }: Props) {
+// memo：切换 tab 时父组件重渲染，props（均为 useCallback）不变则跳过
+export const EditHeader = memo(function EditHeader({ onDraft, onCancel }: Props) {
   const { control } = useContentForm();
   // 只在这里订阅 isSubmitting，避免整个页面随之重渲染
   const { isSubmitting } = useFormState({ control });
@@ -45,4 +47,4 @@ export function EditHeader({ onDraft, onCancel }: Props) {
       </Button>
     </Stack>
   );
-}
+});

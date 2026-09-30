@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Box, Button, Divider, Paper, Stack, Typography } from '@mui/material';
 import {
   RHFCheckbox,
@@ -23,7 +24,8 @@ import { FormRow } from './FormRow';
 
 const FIELD_WIDTH = 360;
 
-export function AttributeTab() {
+// memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
+export const AttributeTab = memo(function AttributeTab() {
   const { control } = useContentForm();
 
   return (
@@ -151,4 +153,4 @@ export function AttributeTab() {
       </Stack>
     </Paper>
   );
-}
+});

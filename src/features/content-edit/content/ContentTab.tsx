@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   Button,
   Dialog,
@@ -20,7 +20,8 @@ type Props = {
   onSectionChange: (index: number) => void;
 };
 
-export function ContentTab({ sectionIndex, onSectionChange }: Props) {
+// memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
+export const ContentTab = memo(function ContentTab({ sectionIndex, onSectionChange }: Props) {
   const { control } = useContentForm();
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -74,7 +75,7 @@ export function ContentTab({ sectionIndex, onSectionChange }: Props) {
       )}
     </Stack>
   );
-}
+});
 
 function PreviewDialog({
   sectionIndex,
