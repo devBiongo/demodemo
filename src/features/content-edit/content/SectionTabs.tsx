@@ -1,8 +1,6 @@
-import { memo, useCallback } from 'react';
-import { Box, IconButton, InputBase, Stack, Tooltip } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { memo } from 'react';
+import { Box, InputBase, Stack, Tooltip } from '@mui/material';
 import { useController } from 'react-hook-form';
-import { createEmptySection } from '../defaults';
 import { sectionField, useContentForm } from '../form';
 import { SECTION_COUNT } from '../schema';
 
@@ -12,20 +10,15 @@ type Props = {
 };
 
 export function SectionTabs({ value, onChange }: Props) {
-  const { setValue } = useContentForm();
-
-  const clearSection = useCallback(
-    (index: number) => {
-      if (!window.confirm(`タブ${index + 1}の内容をクリアしますか？`)) return;
-      setValue(`content.sections.${index}`, createEmptySection(), { shouldDirty: true });
-    },
-    [setValue],
-  );
-
   return (
-    <Stack direction="row" role="tablist" sx={{ bgcolor: 'grey.200', px: 1, py: 0.75, gap: 1, overflowX: 'auto' }}>
+    <Stack
+      direction="row"
+      role="tablist"
+      // 灰色底，上面排列白色的 tab
+      sx={{ bgcolor: 'grey.100', px: 1.5, py: 0.75, gap: 0.75, overflowX: 'auto', borderBottom: 1, borderColor: 'divider' }}
+    >
       {Array.from({ length: SECTION_COUNT }, (_, i) => (
-        <SectionTab key={i} index={i} active={i === value} onSelect={onChange} onClear={clearSection} />
+        <SectionTab key={i} index={i} active={i === value} onSelect={onChange} />
       ))}
     </Stack>
   );
@@ -35,16 +28,18 @@ type TabProps = {
   index: number;
   active: boolean;
   onSelect: (index: number) => void;
-  onClear: (index: number) => void;
 };
 
 /** tab 名可直接编辑；只订阅自己的 name 字段 */
-const SectionTab = memo(function SectionTab({ index, active, onSelect, onClear }: TabProps) {
+const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProps) {
   const { control } = useContentForm();
   const {
     field,
     fieldState: { error },
   } = useController({ control, name: sectionField(index, 'name') });
+
+  const highlighted = active || !!error;
+  const accent = error ? 'error.main' : 'primary.main';
 
   return (
     <Box
@@ -54,11 +49,21 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect, onClear }
       sx={{
         display: 'flex',
         alignItems: 'center',
-        width: 140,
+        gap: 0.75,
+        width: 150,
+        height: 34,
         flexShrink: 0,
+        px: 1,
         cursor: 'pointer',
-        borderBottom: 2,
-        borderColor: error ? 'error.main' : active ? 'primary.main' : 'transparent',
+        // 白色卡片；选中（或出错）时整圈边框变为主色（错误色）。
+        // 用 border + 内侧 1px 阴影呈现 2px 的效果，尺寸不变，切换时不会跳动
+        bgcolor: 'background.paper',
+        borderRadius: 1,
+        border: 1,
+        borderColor: highlighted ? accent : 'divider',
+        boxShadow: (t) => (highlighted ? `inset 0 0 0 1px ${error ? t.palette.error.main : t.palette.primary.main}` : 'none'),
+        transition: (t) => t.transitions.create(['box-shadow', 'border-color'], { duration: t.transitions.duration.shortest }),
+        '&:hover': { borderColor: highlighted ? accent : 'grey.400' },
       }}
     >
       <Box
@@ -68,9 +73,12 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect, onClear }
           flexShrink: 0,
           display: 'grid',
           placeItems: 'center',
-          fontSize: 12,
-          color: '#fff',
-          bgcolor: active ? 'primary.main' : 'grey.500',
+          borderRadius: 1,
+          fontSize: 11,
+          fontWeight: 600,
+          color: highlighted ? '#fff' : 'text.secondary',
+          bgcolor: highlighted ? accent : 'transparent',
+          transition: (t) => t.transitions.create(['background-color', 'color'], { duration: t.transitions.duration.shortest }),
         }}
       >
         {index + 1}
@@ -80,19 +88,18 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect, onClear }
           {...field}
           inputRef={field.ref}
           onFocus={() => onSelect(index)}
-          sx={{ flex: 1, mx: 1, fontSize: 13, color: active ? 'primary.main' : 'text.primary' }}
+          placeholder="タブ名"
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            fontSize: 13,
+            fontWeight: active ? 500 : 400,
+            color: error ? 'error.main' : active ? 'primary.main' : 'text.primary',
+            '& .MuiInputBase-input': { px: 0.75, py: 0.5 },
+            '& .MuiInputBase-input::placeholder': { color: 'text.disabled', opacity: 1 },
+          }}
         />
       </Tooltip>
-      <IconButton
-        size="small"
-        aria-label={`タブ${index + 1}をクリア`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClear(index);
-        }}
-      >
-        <CloseIcon sx={{ fontSize: 14 }} />
-      </IconButton>
     </Box>
   );
 });
