@@ -1,5 +1,6 @@
 export * from './types';
 export * from './LabelWithHelp';
+export * from './CharCount';
 export * from './RHFTextField';
 export * from './RHFSelect';
 export * from './RHFCheckbox';

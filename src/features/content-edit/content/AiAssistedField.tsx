@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import { useWatch, type FieldPathByValue } from 'react-hook-form';
-import { RHFCheckbox, RHFTextField } from '../../../components/form';
+import { CharCount, RHFCheckbox, RHFTextField } from '../../../components/form';
 import { useContentForm } from '../form';
 import type { ContentFormValues } from '../schema';
 
@@ -22,7 +22,21 @@ export function AiAssistedField({ aiName, textName, label, minRows = 2 }: Props)
       <Box sx={{ width: 150, flexShrink: 0, pt: 0.5 }}>
         <RHFCheckbox control={control} name={aiName} label="ChatGPTを使用" />
       </Box>
-      <RHFTextField control={control} name={textName} label={label} multiline minRows={minRows} fullWidth disabled={useAi} />
+      <Box sx={{ position: 'relative', flex: 1, minWidth: 0 }}>
+        <RHFTextField
+          control={control}
+          name={textName}
+          label={label}
+          multiline
+          minRows={minRows}
+          fullWidth
+          disabled={useAi}
+          // 底部留出显示文字数量的空间，避免与最后一行文字重叠
+          sx={{ '& .MuiInputBase-multiline': { pb: 2.5 } }}
+        />
+        {/* 文字数量：显示在输入框内的右下角 */}
+        <CharCount control={control} name={textName} sx={{ position: 'absolute', right: 12, bottom: 7 }} />
+      </Box>
     </Stack>
   );
 }

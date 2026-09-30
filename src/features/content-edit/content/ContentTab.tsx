@@ -52,20 +52,23 @@ export const ContentTab = memo(function ContentTab({ sectionIndex, onSectionChan
         </Stack>
       </Paper>
 
-      <Paper variant="outlined" sx={{ overflow: "hidden" }}>
+      {/* tab 直接放在页面背景上，下方的卡片只包含内容区 */}
+      <Stack spacing={1}>
         <SectionTabs value={sectionIndex} onChange={onSectionChange} />
-        <Stack spacing={2} sx={{ p: 2 }} role="tabpanel">
-          {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
-          <SectionPanel key={sectionIndex} index={sectionIndex} />
-          {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
-          <SectionBodyEditor
-            index={sectionIndex}
-            toolbarStart={
-              <TabUpdatedAtField key={sectionIndex} index={sectionIndex} />
-            }
-          />
-        </Stack>
-      </Paper>
+        <Paper variant="outlined">
+          <Stack spacing={2} sx={{ p: 2 }} role="tabpanel">
+            {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
+            <SectionPanel key={sectionIndex} index={sectionIndex} />
+            {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
+            <SectionBodyEditor
+              index={sectionIndex}
+              toolbarStart={
+                <TabUpdatedAtField key={sectionIndex} index={sectionIndex} />
+              }
+            />
+          </Stack>
+        </Paper>
+      </Stack>
 
       {previewOpen && (
         <PreviewDialog

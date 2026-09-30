@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Box, InputBase, Stack, Tooltip } from '@mui/material';
+import { Box, InputBase, lighten, Stack, Tooltip } from '@mui/material';
 import { useController } from 'react-hook-form';
 import { sectionField, useContentForm } from '../form';
 import { SECTION_COUNT } from '../schema';
@@ -14,8 +14,10 @@ export function SectionTabs({ value, onChange }: Props) {
     <Stack
       direction="row"
       role="tablist"
-      // 灰色底，上面排列白色的 tab
-      sx={{ bgcolor: 'grey.100', px: 1.5, py: 0.75, gap: 0.75, overflowX: 'auto', borderBottom: 1, borderColor: 'divider' }}
+      // 没有自己的背景和边框，白色的 tab 直接排列在页面的灰色背景上。
+      // overflowX: auto 会把超出部分裁掉（纵向也会），选中框向外 1px 的阴影会缺上下两边；
+      // 所以四周留 2px 内边距，再用 -2px 外边距抵消，位置不变
+      sx={{ gap: 0.75, overflowX: 'auto', p: '2px', m: '-2px' }}
     >
       {Array.from({ length: SECTION_COUNT }, (_, i) => (
         <SectionTab key={i} index={i} active={i === value} onSelect={onChange} />
@@ -49,33 +51,42 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 0.75,
+        // 圆圈到右侧输入框的距离，与到上 / 下 / 左边框的距离一致（4px）
+        gap: 0.5,
         width: 150,
         height: 34,
         flexShrink: 0,
-        px: 1,
+        // 左内边距 = (内高 32 - 圆圈 24) / 2 = 4px，与圆圈到上边框的距离一致
+        pl: 0.5,
+        pr: 1,
         cursor: 'pointer',
         // 白色卡片；选中（或出错）时整圈边框变为主色（错误色）。
-        // 用 border + 内侧 1px 阴影呈现 2px 的效果，尺寸不变，切换时不会跳动
-        bgcolor: 'background.paper',
+        // 用 border + 外侧 1px 阴影呈现 2px 的效果：尺寸不变，内部间距也不会被压缩
+        // 选中（或出错）时铺一层很淡的主色（错误色）。
+        // 用 lighten 混入白色得到不透明的颜色，避免半透明色叠在灰色页面背景上发灰
+        bgcolor: (t) =>
+          highlighted ? lighten(error ? t.palette.error.main : t.palette.primary.main, 0.94) : t.palette.background.paper,
         borderRadius: 1,
         border: 1,
         borderColor: highlighted ? accent : 'divider',
-        boxShadow: (t) => (highlighted ? `inset 0 0 0 1px ${error ? t.palette.error.main : t.palette.primary.main}` : 'none'),
-        transition: (t) => t.transitions.create(['box-shadow', 'border-color'], { duration: t.transitions.duration.shortest }),
+        boxShadow: (t) => (highlighted ? `0 0 0 1px ${error ? t.palette.error.main : t.palette.primary.main}` : 'none'),
+        transition: (t) =>
+          t.transitions.create(['box-shadow', 'border-color', 'background-color'], { duration: t.transitions.duration.shortest }),
         '&:hover': { borderColor: highlighted ? accent : 'grey.400' },
       }}
     >
       <Box
         sx={{
-          width: 20,
-          height: 20,
+          // 圆形编号
+          width: 24,
+          height: 24,
           flexShrink: 0,
           display: 'grid',
           placeItems: 'center',
-          borderRadius: 1,
-          fontSize: 11,
-          fontWeight: 600,
+          borderRadius: '50%',
+          fontSize: 12,
+          fontWeight: 700,
+          lineHeight: 1,
           color: highlighted ? '#fff' : 'text.secondary',
           bgcolor: highlighted ? accent : 'transparent',
           transition: (t) => t.transitions.create(['background-color', 'color'], { duration: t.transitions.duration.shortest }),
@@ -88,15 +99,13 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
           {...field}
           inputRef={field.ref}
           onFocus={() => onSelect(index)}
-          placeholder="タブ名"
           sx={{
             flex: 1,
             minWidth: 0,
-            fontSize: 13,
-            fontWeight: active ? 500 : 400,
-            color: error ? 'error.main' : active ? 'primary.main' : 'text.primary',
+            // 文字不随选中状态变化（只有出错时变红）
+            fontSize: 14,
+            color: error ? 'error.main' : 'text.primary',
             '& .MuiInputBase-input': { px: 0.75, py: 0.5 },
-            '& .MuiInputBase-input::placeholder': { color: 'text.disabled', opacity: 1 },
           }}
         />
       </Tooltip>

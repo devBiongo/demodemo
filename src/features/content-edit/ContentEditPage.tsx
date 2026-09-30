@@ -73,7 +73,11 @@ function ContentEditForm() {
     <Box component="form" noValidate onSubmit={handleSubmit(onValid, onInvalid)} sx={{ minHeight: '100vh' }}>
       <EditHeader onDraft={onDraft} onCancel={onCancel} />
 
-      <Tabs value={tab} onChange={(_, v: MainTab) => setTab(v)} sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}>
+      <Tabs
+        value={tab}
+        onChange={(_, v: MainTab) => setTab(v)}
+        sx={{ px: 2, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
+      >
         {TABS.map((t) => (
           <Tab key={t.value} value={t.value} label={t.label} />
         ))}
