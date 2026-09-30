@@ -1,9 +1,9 @@
 import { memo } from 'react';
 import { Box, InputBase, lighten, Stack, Tooltip } from '@mui/material';
 import { useController } from 'react-hook-form';
-import { useContentForm } from '../../../hooks/useContentForm';
-import { sectionField } from '../../../utils/fieldPath';
-import { SECTION_COUNT } from '../../../utils/schema';
+import { useContentForm } from '../../../../hooks/useContentForm';
+import { sectionField } from '../../../../utils/fieldPath';
+import { SECTION_COUNT } from '../../../../utils/schema';
 
 type Props = {
   value: number;

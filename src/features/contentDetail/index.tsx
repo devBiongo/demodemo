@@ -1,21 +1,37 @@
 import { useCallback, useState } from 'react';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { KeepAliveTabPanel } from '../../components/KeepAliveTabPanel';
 import { Header } from './components/Header';
 import { ContentScreen } from './components/screens/content';
 import { PropertyScreen } from './components/screens/property';
-import { ContentFormProvider } from './contexts/ContentFormProvider';
 import { useFormActions } from './hooks/useFormActions';
+import { mockContent } from './utils/defaults';
+import { contentFormSchema, type ContentFormValues } from './utils/schema';
 import { MAIN_TABS, type ErrorLocation, type MainTab } from './utils/tabs';
 
 /** 在纵向 flex 容器中占满剩余高度（minHeight: 0 让内部可以出现滚动条） */
 const FILL = { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' } as const;
 
+/**
+ * 只负责创建表单实例并提供 context。
+ *
+ * 注意：FormProvider 每次渲染都会生成新的 context 值，导致所有 useFormContext 的组件
+ * （memo 也挡不住）全部重渲染。所以这里不能持有任何 state，也不能读取 methods.formState
+ * （读取即订阅，状态变化时本组件会重渲染）。tab 状态等放在下层的 ContentDetail 中。
+ */
 export function ContentDetailPage() {
+  const methods = useForm<ContentFormValues>({
+    defaultValues: mockContent,
+    // 用 schema 统一校验：未挂载的 tab / section 里的字段也会被校验
+    resolver: zodResolver(contentFormSchema),
+  });
+
   return (
-    <ContentFormProvider>
+    <FormProvider {...methods}>
       <ContentDetail />
-    </ContentFormProvider>
+    </FormProvider>
   );
 }
 

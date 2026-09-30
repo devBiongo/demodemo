@@ -4,11 +4,11 @@ import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import type { OnMount } from "@monaco-editor/react";
 import type { ClassicEditor } from "ckeditor5";
-import { RHFRichTextEditor } from "../../../../../components/ckeditor";
-import { RHFCodeEditor } from "../../../../../components/monaco";
-import { useContentForm } from "../../../hooks/useContentForm";
-import { sectionField } from "../../../utils/fieldPath";
-import { CompareDialog } from "../../modals/CompareDialog";
+import { RHFRichTextEditor } from "../../../../../../components/ckeditor";
+import { RHFCodeEditor } from "../../../../../../components/monaco";
+import { useContentForm } from "../../../../hooks/useContentForm";
+import { sectionField } from "../../../../utils/fieldPath";
+import { CompareDialog } from "../../../modals/CompareDialog";
 
 /**
  * 正文编辑器：

@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
-import { RHFTextField } from '../../../../../components/form';
-import { useContentForm } from '../../../hooks/useContentForm';
-import { sectionField } from '../../../utils/fieldPath';
+import { RHFTextField } from '../../../../../../components/form';
+import { useContentForm } from '../../../../hooks/useContentForm';
+import { sectionField } from '../../../../utils/fieldPath';
 
 type Props = {
   index: number;

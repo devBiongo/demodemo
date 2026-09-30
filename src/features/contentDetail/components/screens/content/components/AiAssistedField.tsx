@@ -1,8 +1,8 @@
 import { Box, Stack } from '@mui/material';
 import { useWatch, type FieldPathByValue } from 'react-hook-form';
-import { CharCount, RHFCheckbox, RHFTextField } from '../../../../../components/form';
-import { useContentForm } from '../../../hooks/useContentForm';
-import type { ContentFormValues } from '../../../utils/schema';
+import { CharCount, RHFCheckbox, RHFTextField } from '../../../../../../components/form';
+import { useContentForm } from '../../../../hooks/useContentForm';
+import type { ContentFormValues } from '../../../../utils/schema';
 
 type Props = {
   aiName: FieldPathByValue<ContentFormValues, boolean>;

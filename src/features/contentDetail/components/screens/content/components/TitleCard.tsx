@@ -1,6 +1,6 @@
 import { Button, Paper, Stack } from '@mui/material';
-import { RHFTextField } from '../../../../../components/form';
-import { useContentForm } from '../../../hooks/useContentForm';
+import { RHFTextField } from '../../../../../../components/form';
+import { useContentForm } from '../../../../hooks/useContentForm';
 import { AiAssistedField } from './AiAssistedField';
 
 type Props = {

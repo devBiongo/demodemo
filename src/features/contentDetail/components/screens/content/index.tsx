@@ -1,11 +1,11 @@
 import { memo, useState } from 'react';
 import { Paper, Stack } from '@mui/material';
 import { PreviewDialog } from '../../modals/PreviewDialog';
-import { SectionBodyEditor } from './SectionBodyEditor';
-import { SectionPanel } from './SectionPanel';
-import { SectionTabs } from './SectionTabs';
-import { TabUpdatedAtField } from './TabUpdatedAtField';
-import { TitleCard } from './TitleCard';
+import { SectionBodyEditor } from './components/SectionBodyEditor';
+import { SectionPanel } from './components/SectionPanel';
+import { SectionTabs } from './components/SectionTabs';
+import { TabUpdatedAtField } from './components/TabUpdatedAtField';
+import { TitleCard } from './components/TitleCard';
 
 type Props = {
   sectionIndex: number;

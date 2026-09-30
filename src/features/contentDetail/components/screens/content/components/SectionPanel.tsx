@@ -1,9 +1,9 @@
 import { Box, Stack } from '@mui/material';
-import { RHFCheckbox, RHFSelect, RHFTextField } from '../../../../../components/form';
-import { useContentForm } from '../../../hooks/useContentForm';
-import { sectionField } from '../../../utils/fieldPath';
-import { CA_RULE_OPTIONS, SECTION_FLAGS } from '../../../utils/options';
-import type { Section } from '../../../utils/schema';
+import { RHFCheckbox, RHFSelect, RHFTextField } from '../../../../../../components/form';
+import { useContentForm } from '../../../../hooks/useContentForm';
+import { sectionField } from '../../../../utils/fieldPath';
+import { CA_RULE_OPTIONS, SECTION_FLAGS } from '../../../../utils/options';
+import type { Section } from '../../../../utils/schema';
 import { AiAssistedField } from './AiAssistedField';
 
 type Props = {
