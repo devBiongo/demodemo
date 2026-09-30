@@ -1,81 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import {
-  Alignment,
-  Bold,
-  ClassicEditor,
-  Essentials,
-  FontBackgroundColor,
-  FontColor,
-  FontFamily,
-  FontSize,
-  GeneralHtmlSupport,
-  Heading,
-  HorizontalLine,
-  HtmlComment,
-  Image,
-  Italic,
-  Link,
-  List,
-  Paragraph,
-  RemoveFormat,
-  Strikethrough,
-  Table,
-  TableToolbar,
-  Underline,
-  type EditorConfig,
-} from 'ckeditor5';
-import jaTranslations from 'ckeditor5/translations/ja.js';
-import 'ckeditor5/ckeditor5.css';
+import { ClassicEditor } from 'ckeditor5';
 import { useController, type FieldValues } from 'react-hook-form';
+import { writeField } from '../form/writeField';
+import { EDITOR_CONFIG } from './config';
 import type { RHFRichTextEditorProps } from './RHFRichTextEditor';
-import { writeField } from './writeField';
 
 const TOOLBAR_HEIGHT = 40;
-
-const CONFIG: EditorConfig = {
-  // TODO: 商用利用の場合は正式なライセンスキーに置き換える
-  licenseKey: 'GPL',
-  language: 'ja',
-  translations: [jaTranslations],
-  plugins: [
-    Essentials,
-    Paragraph,
-    Heading,
-    Bold,
-    Italic,
-    Underline,
-    Strikethrough,
-    RemoveFormat,
-    FontSize,
-    FontFamily,
-    FontColor,
-    FontBackgroundColor,
-    Alignment,
-    List,
-    Link,
-    Image,
-    Table,
-    TableToolbar,
-    HorizontalLine,
-    GeneralHtmlSupport,
-    HtmlComment,
-  ],
-  toolbar: [
-    'undo', 'redo', '|',
-    'heading', 'fontSize', 'fontColor', 'fontBackgroundColor', '|',
-    'bold', 'italic', 'underline', 'strikethrough', 'removeFormat', '|',
-    'alignment', 'bulletedList', 'numberedList', '|',
-    'link', 'insertTable', 'horizontalLine',
-  ],
-  table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] },
-  // 既存 HTML の id / class / style などを保持する。イベント属性（on*）は許可しない
-  htmlSupport: {
-    allow: [{ name: /.*/, attributes: true, classes: true, styles: true }],
-    disallow: [{ attributes: [{ key: /^on/i, value: true }] }],
-  },
-};
 
 /**
  * 非受控的 CKEditor：
@@ -138,7 +70,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
     <Box sx={{ '& .ck-editor__editable_inline': { height: editableHeight, overflowY: 'auto' } }}>
       <CKEditor
         editor={ClassicEditor}
-        config={CONFIG}
+        config={EDITOR_CONFIG}
         data={initialData}
         onReady={(editor) => {
           editorRef.current = editor;

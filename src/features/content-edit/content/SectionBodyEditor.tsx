@@ -4,7 +4,8 @@ import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import type { OnMount } from "@monaco-editor/react";
 import type { ClassicEditor } from "ckeditor5";
-import { RHFCodeEditor, RHFRichTextEditor } from "../../../components/form";
+import { RHFRichTextEditor } from "../../../components/ckeditor";
+import { RHFCodeEditor } from "../../../components/monaco";
 import { sectionField, useContentForm } from "../form";
 
 /**

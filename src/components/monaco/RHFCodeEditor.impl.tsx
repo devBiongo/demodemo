@@ -1,4 +1,4 @@
-import { monaco } from "../../lib/monaco";
+import { monaco } from "./setup";
 import {
   useEffect,
   useMemo,
@@ -15,7 +15,7 @@ import {
 } from "react-hook-form";
 import type { editor } from "monaco-editor";
 import type { RHFCodeEditorProps } from "./RHFCodeEditor";
-import { writeField } from "./writeField";
+import { writeField } from "../form/writeField";
 
 const DEFAULT_OPTIONS: EditorProps["options"] = {
   minimap: { enabled: false },
