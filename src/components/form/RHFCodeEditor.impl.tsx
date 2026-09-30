@@ -1,15 +1,26 @@
-import { monaco } from '../../lib/monaco';
-import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import Editor, { type EditorProps, type OnMount } from '@monaco-editor/react';
-import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
-import type { editor } from 'monaco-editor';
-import type { RHFCodeEditorProps } from './RHFCodeEditor';
-import { writeField } from './writeField';
+import { monaco } from "../../lib/monaco";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from "react";
+import Editor, { type EditorProps, type OnMount } from "@monaco-editor/react";
+import {
+  useController,
+  type Control,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
+import type { editor } from "monaco-editor";
+import type { RHFCodeEditorProps } from "./RHFCodeEditor";
+import { writeField } from "./writeField";
 
-const DEFAULT_OPTIONS: EditorProps['options'] = {
+const DEFAULT_OPTIONS: EditorProps["options"] = {
   minimap: { enabled: false },
   fontSize: 13,
-  wordWrap: 'on',
+  wordWrap: "on",
   automaticLayout: true,
   scrollBeyondLastLine: false,
 };
@@ -30,7 +41,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   name,
   control,
   height,
-  language = 'html',
+  language = "html",
   path,
   onMount,
   options,
@@ -44,7 +55,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   const pendingRef = useRef<Pending | null>(null);
   const timerRef = useRef<number>();
   /** 已知与该 model 内容一致的表单值，用于跳过自己写回后引起的同步 */
-  const syncedRef = useRef({ uri: '', value: '' });
+  const syncedRef = useRef({ uri: "", value: "" });
   /** 已经用表单值初始化过的 model */
   const initializedRef = useRef(new Set<string>());
   /** 程序同步 model 时屏蔽 change 监听 */
@@ -68,7 +79,8 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
     const model = editorRef.current?.getModel();
     if (!model) return;
     const uri = model.uri.toString();
-    if (syncedRef.current.uri === uri && syncedRef.current.value === value) return;
+    if (syncedRef.current.uri === uri && syncedRef.current.value === value)
+      return;
     if (pendingRef.current?.model === model) {
       // 外部修改优先，丢弃尚未写回的输入
       window.clearTimeout(timerRef.current);
@@ -78,7 +90,11 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
       suppressRef.current = true;
       if (initializedRef.current.has(uri)) {
         // 外部修改：作为一次编辑，可撤销
-        model.pushEditOperations([], [{ range: model.getFullModelRange(), text: value }], () => null);
+        model.pushEditOperations(
+          [],
+          [{ range: model.getFullModelRange(), text: value }],
+          () => null,
+        );
       } else {
         // 首次载入：不进入撤销历史
         model.setValue(value);
@@ -117,19 +133,36 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
       mountedRef.current = false;
       window.setTimeout(() => {
         if (mountedRef.current) return;
-        paths.forEach((p) => monaco.editor.getModel(monaco.Uri.parse(p))?.dispose());
+        paths.forEach((p) =>
+          monaco.editor.getModel(monaco.Uri.parse(p))?.dispose(),
+        );
       });
     };
   }, []);
 
-  const mergedOptions = useMemo(() => ({ ...DEFAULT_OPTIONS, ...options }), [options]);
+  const mergedOptions = useMemo(
+    () => ({ ...DEFAULT_OPTIONS, ...options }),
+    [options],
+  );
 
   return (
     <>
       {/* model 由 Editor 按 path 创建（初始为空），内容由 FieldBinding 同步 */}
-      <Editor height={height} language={language} path={path} onMount={handleMount} options={mergedOptions} />
+      <Editor
+        height={height}
+        language={language}
+        path={path}
+        onMount={handleMount}
+        options={mergedOptions}
+      />
       {/* 放在 Editor 之后：其 effect 在 Editor 切换 model 之后执行 */}
-      <FieldBinding key={name} control={control} name={name} ready={ready} syncRef={syncRef} />
+      <FieldBinding
+        key={name}
+        control={control}
+        name={name}
+        ready={ready}
+        syncRef={syncRef}
+      />
     </>
   );
 }
@@ -142,9 +175,14 @@ type FieldBindingProps<T extends FieldValues> = {
 };
 
 /** 订阅单个字段的值，变化时同步到编辑器。以 name 为 key 使用 */
-function FieldBinding<T extends FieldValues>({ control, name, ready, syncRef }: FieldBindingProps<T>) {
+function FieldBinding<T extends FieldValues>({
+  control,
+  name,
+  ready,
+  syncRef,
+}: FieldBindingProps<T>) {
   const { field } = useController({ control, name });
-  const value: string = field.value ?? '';
+  const value: string = field.value ?? "";
 
   useEffect(() => {
     if (ready) syncRef.current(value);
