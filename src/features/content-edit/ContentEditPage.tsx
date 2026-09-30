@@ -10,6 +10,9 @@ import { EditHeader } from './EditHeader';
 import { locateFirstError, useContentForm, type MainTab } from './form';
 import { contentFormSchema, type ContentFormValues } from './schema';
 
+/** 在纵向 flex 容器中占满剩余高度（minHeight: 0 让内部可以出现滚动条） */
+const FILL = { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' } as const;
+
 const TABS: { value: MainTab; label: string }[] = [
   { value: 'content', label: 'コンテンツ' },
   { value: 'attributes', label: '属性' },
@@ -70,25 +73,35 @@ function ContentEditForm() {
   }, [isDirty, reset]);
 
   return (
-    <Box component="form" noValidate onSubmit={handleSubmit(onValid, onInvalid)} sx={{ minHeight: '100vh' }}>
-      <EditHeader onDraft={onDraft} onCancel={onCancel} />
+    // 整个页面固定为视口高度、不滚动；超出的内容在各 tab 内部滚动
+    <Box
+      component="form"
+      noValidate
+      onSubmit={handleSubmit(onValid, onInvalid)}
+      sx={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+    >
+      {/* 标题栏 + tab 栏：高度固定，始终显示在顶部 */}
+      <Box sx={{ flexShrink: 0 }}>
+        <EditHeader onDraft={onDraft} onCancel={onCancel} />
+        <Tabs
+          value={tab}
+          onChange={(_, v: MainTab) => setTab(v)}
+          sx={{ px: 2, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
+        >
+          {TABS.map((t) => (
+            <Tab key={t.value} value={t.value} label={t.label} />
+          ))}
+        </Tabs>
+      </Box>
 
-      <Tabs
-        value={tab}
-        onChange={(_, v: MainTab) => setTab(v)}
-        sx={{ px: 2, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
-      >
-        {TABS.map((t) => (
-          <Tab key={t.value} value={t.value} label={t.label} />
-        ))}
-      </Tabs>
-
-      {/* 首次显示时挂载，之后只隐藏不卸载：再次切换时无需重建（尤其是编辑器） */}
-      <Box sx={{ p: 2 }}>
-        <KeepAliveTabPanel active={tab === 'content'}>
+      {/* 占满剩余高度，底部与视口保持 4px。
+          首次显示时挂载，之后只隐藏不卸载：再次切换时无需重建（尤其是编辑器） */}
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', px: 2, pt: 2, pb: 0.5 }}>
+        <KeepAliveTabPanel active={tab === 'content'} sx={FILL}>
           <ContentTab sectionIndex={sectionIndex} onSectionChange={setSectionIndex} />
         </KeepAliveTabPanel>
-        <KeepAliveTabPanel active={tab === 'attributes'}>
+        {/* 属性：内容超出时在 tab 内滚动 */}
+        <KeepAliveTabPanel active={tab === 'attributes'} sx={{ ...FILL, overflowY: 'auto' }}>
           <AttributeTab />
         </KeepAliveTabPanel>
         {(tab === 'category' || tab === 'history') && <Typography color="text.secondary">未実装</Typography>}

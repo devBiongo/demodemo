@@ -17,7 +17,8 @@ export function SectionTabs({ value, onChange }: Props) {
       // 没有自己的背景和边框，白色的 tab 直接排列在页面的灰色背景上。
       // overflowX: auto 会把超出部分裁掉（纵向也会），选中框向外 1px 的阴影会缺上下两边；
       // 所以四周留 2px 内边距，再用 -2px 外边距抵消，位置不变
-      sx={{ gap: 0.75, overflowX: 'auto', p: '2px', m: '-2px' }}
+      // flexShrink: 0：在纵向 flex 布局中高度不被压缩
+      sx={{ gap: 0.75, overflowX: 'auto', p: '2px', m: '-2px', flexShrink: 0 }}
     >
       {Array.from({ length: SECTION_COUNT }, (_, i) => (
         <SectionTab key={i} index={i} active={i === value} onSelect={onChange} />

@@ -1,9 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { Box } from '@mui/material';
+import { Box, type SxProps, type Theme } from '@mui/material';
 
 type Props = {
   active: boolean;
   children: ReactNode;
+  /** 显示时应用的样式（布局用）。隐藏时不应用，避免 display 等覆盖 hidden */
+  sx?: SxProps<Theme>;
 };
 
 /**
@@ -13,14 +15,14 @@ type Props = {
  * 注意：隐藏期间组件仍然挂载着，父组件重渲染时 children 也会跟着渲染，
  * 所以 children 应当用 memo 包裹（props 不变时跳过渲染）。
  */
-export function KeepAliveTabPanel({ active, children }: Props) {
+export function KeepAliveTabPanel({ active, children, sx }: Props) {
   const [mounted, setMounted] = useState(active);
   // 渲染期间更新自身 state：React 会立即以新 state 重新渲染，不会多一次提交
   if (active && !mounted) setMounted(true);
   if (!mounted) return null;
 
   return (
-    <Box role="tabpanel" hidden={!active}>
+    <Box role="tabpanel" hidden={!active} sx={active ? sx : undefined}>
       {children}
     </Box>
   );

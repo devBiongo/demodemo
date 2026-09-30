@@ -20,16 +20,8 @@ export const EditHeader = memo(function EditHeader({ onDraft, onCancel }: Props)
       direction="row"
       alignItems="center"
       spacing={2}
-      sx={{
-        px: 2,
-        py: 1,
-        position: 'sticky',
-        top: 0,
-        zIndex: (t) => t.zIndex.appBar,
-        bgcolor: 'background.paper',
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
+      // 位置由外层布局（ContentEditPage）负责
+      sx={{ px: 2, py: 1, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
     >
       <Typography color="primary" fontWeight={700}>
         URL
