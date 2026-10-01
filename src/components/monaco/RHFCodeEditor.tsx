@@ -17,7 +17,12 @@ export type RHFCodeEditorProps<T extends FieldValues> = {
   options?: EditorProps['options'];
   /** 非活性（只读） */
   disabled?: boolean;
-  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 卸载时会立即写回 */
+  /**
+   * 是否显示中（默认 true）。false 期间不同步表单值（隐藏时不改写内容），
+   * 变回 true 时读取一次当前表单值
+   */
+  active?: boolean;
+  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 隐藏 / 卸载时会立即写回 */
   debounceMs?: number;
 };
 

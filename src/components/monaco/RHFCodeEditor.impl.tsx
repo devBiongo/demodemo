@@ -1,6 +1,7 @@
 import { monaco } from "./setup";
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -69,6 +70,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   onMount,
   options,
   disabled = false,
+  active = true,
   debounceMs = 300,
 }: RHFCodeEditorProps<T>) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -146,6 +148,10 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
 
   // 切换字段或卸载前，先把未写回的内容写回原字段
   useEffect(() => () => flushRef.current(), [name]);
+  // 隐藏时立即写回：layout effect 先于其他编辑器的同步（passive effect）执行
+  useLayoutEffect(() => {
+    if (!active) flushRef.current();
+  }, [active]);
 
   // 卸载时释放本组件创建过的所有 model（等编辑器自身销毁后再做；
   // StrictMode 的模拟卸载后会立即重新挂载，此时跳过）
@@ -170,7 +176,8 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   );
 
   return (
-    <Box sx={disabled ? disabledSx : undefined}>
+    // 外框与编辑器同高：height 为百分比时，相对的是本组件的父元素
+    <Box style={{ height }} sx={disabled ? disabledSx : undefined}>
       {/* model 由 Editor 按 path 创建（初始为空），内容由 FieldBinding 同步 */}
       <Editor
         height={height}
@@ -184,7 +191,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
         key={name}
         control={control}
         name={name}
-        ready={ready}
+        enabled={ready && active}
         syncRef={syncRef}
       />
     </Box>
@@ -194,7 +201,8 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
 type FieldBindingProps<T extends FieldValues> = {
   control: Control<T>;
   name: FieldPath<T>;
-  ready: boolean;
+  /** 编辑器就绪且显示中 */
+  enabled: boolean;
   syncRef: MutableRefObject<(value: string) => void>;
 };
 
@@ -202,15 +210,15 @@ type FieldBindingProps<T extends FieldValues> = {
 function FieldBinding<T extends FieldValues>({
   control,
   name,
-  ready,
+  enabled,
   syncRef,
 }: FieldBindingProps<T>) {
   const { field } = useController({ control, name });
   const value: string = field.value ?? "";
 
   useEffect(() => {
-    if (ready) syncRef.current(value);
-  }, [ready, value, syncRef]);
+    if (enabled) syncRef.current(value);
+  }, [enabled, value, syncRef]);
 
   return null;
 }
