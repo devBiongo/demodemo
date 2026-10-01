@@ -19,34 +19,34 @@ export type HybridHtmlEditorProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
   mode: HybridEditorMode;
-  /** 整体高度（含工具栏） */
+  /** 全体の高さ（ツールバーを含む） */
   height: number | string;
-  /** Monaco 的 model path：每个 path 保留各自的内容、撤销历史、光标位置 */
+  /** Monaco の model path：path ごとに内容・元に戻す履歴・カーソル位置を保持する */
   path: string;
-  /** 非活性（只读） */
+  /** 非活性（読み取り専用） */
   disabled?: boolean;
-  /** 指定时，在 CKEditor 工具栏的后面显示切换模式的「ソース」按钮 */
+  /** 指定した場合、CKEditor のツールバーの後ろにモード切替の「ソース」ボタンを表示する */
   onModeChange?: (mode: HybridEditorMode) => void;
-  /** 「ソース」按钮非活性 */
+  /** 「ソース」ボタンを非活性にする */
   modeSwitchDisabled?: boolean;
 };
 
 export type HybridHtmlEditorHandle = {
-  /** 在当前显示的编辑器的光标处插入 HTML */
+  /** 現在表示中のエディタのカーソル位置に HTML を挿入する */
   insertHtml: (html: string) => void;
 };
 
-/** 工具栏高度（CKEditor 加载完成前也占住这个高度，避免布局跳动） */
+/** ツールバーの高さ（CKEditor の読み込み完了前もこの高さを確保し、レイアウトのずれを防ぐ） */
 const TOOLBAR_HEIGHT = 40;
 
 /**
- * 看起来是一个编辑器：上方始终是 CKEditor 的工具栏，下方根据 mode 显示
- * - wysiwyg：CKEditor 的编辑区
- * - source：Monaco（此时工具栏非活性：CKEditor 的按钮对 Monaco 无效）
- * 工具栏后面的「ソース」按钮不属于 CKEditor，source 模式下也可以点击。
+ * 見た目は 1 つのエディタ：上部は常に CKEditor のツールバー、下部は mode に応じて表示する
+ * - wysiwyg：CKEditor の編集領域
+ * - source：Monaco（このときツールバーは非活性：CKEditor のボタンは Monaco には効かない）
+ * ツールバーの後ろの「ソース」ボタンは CKEditor の一部ではないので、source モードでもクリックできる。
  *
- * 两个编辑器创建后都一直保留，切换时只隐藏，不重建。
- * 隐藏的一方不同步表单值，切换回来时才读取一次（各编辑器的 active）。
+ * 2 つのエディタは一度作成したらずっと保持し、切替時は非表示にするだけで作り直さない。
+ * 非表示の側はフォームの値を同期せず、切り替えて戻ったときに一度だけ読み込む（各エディタの active）。
  */
 function HybridHtmlEditorInner<T extends FieldValues>(
   {
@@ -66,7 +66,7 @@ function HybridHtmlEditorInner<T extends FieldValues>(
   );
   const ckEditorRef = useRef<DecoupledEditor | null>(null);
   const monacoRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  // Monaco 第一次切到 source 时才创建（之后一直保留）
+  // Monaco は初めて source に切り替えたときに作成する（以降はずっと保持）
   const monacoUsedRef = useRef(false);
   monacoUsedRef.current ||= mode === "source";
 
@@ -92,7 +92,7 @@ function HybridHtmlEditorInner<T extends FieldValues>(
   }));
 
   const toolbarDisabled = disabled || mode === "source";
-  /** 只显示当前模式的编辑器 */
+  /** 現在のモードのエディタだけを表示する */
   const layer = (visible: boolean) =>
     ({
       position: "absolute",
@@ -118,18 +118,18 @@ function HybridHtmlEditorInner<T extends FieldValues>(
           alignItems: "center",
           borderBottom: 1,
           borderColor: "divider",
-          // 非活性：与其他非活性输入框相同的灰色背景
+          // 非活性：他の非活性の入力欄と同じ灰色の背景
           bgcolor: toolbarDisabled ? "grey.100" : undefined,
         }}
       >
-        {/* CKEditor 的工具栏放在这里。宽度随按钮数量，「ソース」紧跟在后面；
-            放不下时收缩，多出的按钮由 CKEditor 收进「⋮」 */}
+        {/* CKEditor のツールバーはここに置く。幅はボタンの数に合わせ、「ソース」はその直後に続く。
+            収まらない場合は縮み、はみ出したボタンは CKEditor が「⋮」にまとめる */}
         <Box
           ref={setToolbarContainer}
           sx={{
             flex: "0 1 auto",
             minWidth: 0,
-            // 工具栏本身的边框由外框代替
+            // ツールバー自体の枠線は外枠で代用する
             "& .ck.ck-toolbar": {
               border: 0,
               borderRadius: 0,
@@ -178,7 +178,7 @@ function HybridHtmlEditorInner<T extends FieldValues>(
   );
 }
 
-/** CKEditor 的工具栏 + 可切换为 Monaco（HTML 源码）的编辑区 */
+/** CKEditor のツールバー + Monaco（HTML ソース）に切り替えられる編集領域 */
 export const HybridHtmlEditor = forwardRef(HybridHtmlEditorInner) as <
   T extends FieldValues,
 >(

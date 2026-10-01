@@ -3,9 +3,9 @@ import ReactDiffViewer, { DiffMethod, type ReactDiffViewerStylesOverride } from 
 import type { DiffViewerProps } from './DiffViewer';
 
 const LINE_HEIGHT = 18;
-/** 每行的估算高度（行高 + 上下留白） */
+/** 1 行の推定の高さ（行の高さ + 上下の余白） */
 const ROW_HEIGHT = LINE_HEIGHT + 2;
-/** 顶部摘要栏（展开/折叠按钮、变更数） */
+/** 上部のサマリーバー（展開 / 折りたたみボタン、変更数） */
 const SUMMARY_HEIGHT = 32;
 
 const STYLES: ReactDiffViewerStylesOverride = {
@@ -16,14 +16,14 @@ const STYLES: ReactDiffViewerStylesOverride = {
 const countLines = (s: string) => (s ? s.split('\n').length : 1);
 
 export default function DiffViewerImpl({ oldValue, newValue, language, maxHeight, height }: DiffViewerProps) {
-  // 虚拟滚动：只渲染可见范围内的行，行数再多 DOM 数量也基本固定。
-  // 容器高度是固定的，未指定 height 时按行数估算，内容少时不留大片空白；最高不超过 maxHeight（默认屏幕高度的一半）
+  // 仮想スクロール：表示範囲の行だけをレンダリングするので、行数が多くても DOM の数はほぼ一定。
+  // コンテナの高さは固定なので、height の指定がない場合は行数から見積もり、内容が少ない時に大きな余白を残さない。最大でも maxHeight（既定は画面の高さの半分）
   const infiniteLoading = useMemo(() => {
     if (height !== undefined) return { pageSize: 50, containerHeight: `${height}px` };
     const limit = maxHeight ?? Math.round(window.innerHeight / 2);
     const estimated = Math.max(countLines(oldValue), countLines(newValue)) * ROW_HEIGHT + SUMMARY_HEIGHT;
     return {
-      // 类型上必填，当前版本的实现中并未使用
+      // 型の上では必須だが、現在のバージョンの実装では使われていない
       pageSize: 50,
       containerHeight: `${Math.min(estimated, limit)}px`,
     };
@@ -35,7 +35,7 @@ export default function DiffViewerImpl({ oldValue, newValue, language, maxHeight
       newValue={newValue}
       splitView
       compareMethod={DiffMethod.LINES}
-      // 默认显示全文；可用左上角的按钮折叠未变更的行
+      // 既定では全文を表示する。左上のボタンで変更のない行を折りたためる
       showDiffOnly={false}
       highlightLanguage={language}
       styles={STYLES}

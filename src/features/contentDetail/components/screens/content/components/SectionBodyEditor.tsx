@@ -13,14 +13,14 @@ import { sectionField } from "../../../../utils/fieldPath";
 import { CompareDialog } from "../../../modals/CompareDialog";
 
 /**
- * 正文编辑器（HybridHtmlEditor）：上方始终是 CKEditor 的工具栏，下方按模式显示
- * - source 模式：Monaco（HTML 源码），工具栏非活性
- * - wysiwyg 模式：CKEditor 5
- * 两个编辑器都只创建一次，切换模式 / section 时复用同一实例。
+ * 本文エディタ（HybridHtmlEditor）：上部は常に CKEditor のツールバー、下部はモードに応じて表示する
+ * - source モード：Monaco（HTML ソース）。ツールバーは非活性
+ * - wysiwyg モード：CKEditor 5
+ * 2 つのエディタはどちらも一度だけ作成し、モード / section を切り替えても同じインスタンスを使う。
  */
 type Props = {
   index: number;
-  /** 工具栏左侧内容（タブ更新日時 等） */
+  /** ツールバーの左側に表示する内容（タブ更新日時 など） */
   toolbarStart?: ReactNode;
 };
 
@@ -35,7 +35,7 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
   const editorRef = useRef<HybridHtmlEditorHandle>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // TODO: 实际上传文件后，用服务器返回的 URL 替换文件名
+  // TODO: 実際にファイルをアップロードした後、サーバーから返された URL でファイル名を置き換える
   const insertFiles = (files: FileList) => {
     const html = Array.from(files)
       .map((f) =>
@@ -79,7 +79,7 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
         <Button variant="contained" disabled={isDisabled("action.switchMode")} onClick={switchMode}>
           表示切替
         </Button>
-        {/* 点击按钮时编辑器失焦，未写回的内容会先写回表单 */}
+        {/* ボタンをクリックするとエディタからフォーカスが外れ、未書き戻しの内容が先にフォームへ書き戻される */}
         <Button variant="contained" disabled={isDisabled("action.compare")} onClick={() => setCompareOpen(true)}>
           比較
         </Button>
@@ -110,7 +110,7 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
         height={height}
         path={`section-${index}.html`}
         disabled={isDisabled(name)}
-        // 工具栏的「ソース」按钮与「表示切替」切换同一个 mode
+        // ツールバーの「ソース」ボタンと「表示切替」は同じ mode を切り替える
         onModeChange={setMode}
         modeSwitchDisabled={isDisabled("action.switchMode")}
       />

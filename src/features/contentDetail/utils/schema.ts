@@ -14,7 +14,7 @@ const requiredDateTimeSchema = dateTimePartsSchema.extend({
 
 type DateTimeParts = z.infer<typeof dateTimePartsSchema>;
 
-/** 比较用：转成 "YYYY-MM-DDTHH:mm" 字符串（字典序即时间顺序） */
+/** 比較用："YYYY-MM-DDTHH:mm" 形式の文字列に変換する（辞書順 = 時間順） */
 const toSortable = ({ date, hour, minute }: DateTimeParts) =>
   `${date}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
 

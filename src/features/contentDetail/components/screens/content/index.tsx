@@ -12,23 +12,23 @@ type Props = {
   onSectionChange: (index: number) => void;
 };
 
-// memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
+// memo：非表示の間に親（タブ切替など）が再レンダリングされてもスキップ
 export const ContentScreen = memo(function ContentScreen({ sectionIndex, onSectionChange }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
-  // tab 的选中状态立即更新；下方内容用延后的值，在 tab 先显示为选中之后再渲染
+  // タブの選択状態はすぐに更新する。下の内容は遅延させた値を使い、タブが選択表示になった後にレンダリングする
   const contentIndex = useDeferredValue(sectionIndex);
 
   return (
-    // 标题卡片 与 section tab 之间 8px。占满父容器高度，内容卡片在内部滚动
+    // タイトルカード と section タブの間は 8px。親コンテナの高さを埋め、内容カードは内部でスクロール
     <Stack spacing={1} sx={{ flex: 1, minHeight: 0 }}>
       <TitleCard onPreview={() => setPreviewOpen(true)} />
 
-      {/* tab 直接放在页面背景上，下方的卡片只包含内容区；tab 与卡片之间 4px。
-          useFlexGap：用 gap 而不是 margin 实现间距，否则 Stack 会把子元素的 margin 重置为 0，
-          SectionTabs 用来抵消内边距的 -2px margin 就会失效 */}
+      {/* タブはページの背景に直接置き、下のカードは内容エリアだけを含む。タブとカードの間は 4px。
+          useFlexGap：margin ではなく gap で間隔を取る。そうしないと Stack が子要素の margin を 0 にリセットし、
+          SectionTabs が内側の余白を打ち消すための -2px の margin が効かなくなる */}
       <Stack spacing={0.5} useFlexGap sx={{ flex: 1, minHeight: 0 }}>
         <SectionTabs value={sectionIndex} onChange={onSectionChange} />
-        {/* 占满剩余高度（底部贴近视口）；放不下时在卡片内部滚动 */}
+        {/* 残りの高さを埋める（下端はビューポートに近づける）。収まらない場合はカード内でスクロール */}
         <Paper variant="outlined" sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
           <SectionContent index={contentIndex} />
         </Paper>
@@ -39,15 +39,15 @@ export const ContentScreen = memo(function ContentScreen({ sectionIndex, onSecti
   );
 });
 
-/** section 的内容区。memo：tab 先切换的那次渲染（index 未变）时跳过 */
+/** section の内容エリア。memo：タブだけを先に切り替えるレンダリング（index は未変更）ではスキップ */
 const SectionContent = memo(function SectionContent({ index }: { index: number }) {
   return (
-    // useFlexGap：用 gap 实现间距。否则 Stack 给子元素加的 margin-top 会让
-    // 全屏编辑（position: fixed; inset: 0）的编辑器顶部空出 16px
+    // useFlexGap：gap で間隔を取る。そうしないと Stack が子要素に付ける margin-top により、
+    // 全画面編集（position: fixed; inset: 0）のエディタの上に 16px の隙間ができる
     <Stack spacing={2} useFlexGap sx={{ p: 2 }} role="tabpanel">
-      {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
+      {/* 通常の項目：key が変わると再マウントし、各 section が互いに干渉しない */}
       <SectionPanel key={index} index={index} />
-      {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
+      {/* エディタ：key を付けず、section を切り替えても同じインスタンスを使う */}
       <SectionBodyEditor index={index} toolbarStart={<TabUpdatedAtField key={index} index={index} />} />
     </Stack>
   );

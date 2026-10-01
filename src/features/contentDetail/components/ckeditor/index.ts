@@ -1,9 +1,9 @@
-// CKEditor 5 相关文件集中在此目录：
-//   config.ts                  插件・工具栏・HTML 保留规则・语言・许可证
-//   RHFRichTextEditor.tsx      懒加载入口（对外公开）
-//   RHFRichTextEditor.impl.tsx 实现（非受控、防抖写回）
-//   RHFDocumentEditor.tsx      懒加载入口：DecoupledEditor（工具栏与编辑区分开放置）
-//   RHFDocumentEditor.impl.tsx 实现（非受控、防抖写回、切换 name 时复用实例）
-// 外部只从这里 import；config / impl 只会被懒加载的 chunk 引用。
+// CKEditor 5 関連のファイルはこのディレクトリにまとめる：
+//   config.ts                  プラグイン・ツールバー・HTML 保持ルール・言語・ライセンス
+//   RHFRichTextEditor.tsx      遅延読み込みの入口（外部公開）
+//   RHFRichTextEditor.impl.tsx 実装（非制御、デバウンスで書き戻し）
+//   RHFDocumentEditor.tsx      遅延読み込みの入口：DecoupledEditor（ツールバーと編集領域を別々に配置）
+//   RHFDocumentEditor.impl.tsx 実装（非制御、デバウンスで書き戻し、name 切替時もインスタンスを再利用）
+// 外部からはここからのみ import する。config / impl は遅延読み込みの chunk からのみ参照される。
 export * from './RHFRichTextEditor';
 export * from './RHFDocumentEditor';

@@ -5,7 +5,7 @@ type Props = {
   height: number | string;
 };
 
-/** 在沙箱 iframe 中渲染 HTML，不执行脚本 */
+/** サンドボックスの iframe で HTML を表示する（スクリプトは実行しない） */
 export function HtmlPreview({ html, height }: Props) {
   return (
     <Box

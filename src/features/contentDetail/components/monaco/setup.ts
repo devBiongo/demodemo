@@ -1,5 +1,5 @@
-// Monaco 初始化：只加载编辑器核心 + HTML 语言，并让 @monaco-editor/react 使用本地包而不是 CDN。
-// 只会被懒加载的编辑器模块引入，不进入首屏 bundle。
+// Monaco の初期化：エディタのコア + HTML 言語だけを読み込み、@monaco-editor/react が CDN ではなくローカルのパッケージを使うようにする。
+// 遅延読み込みのエディタモジュールからのみ読み込まれ、初期表示の bundle には含まれない。
 import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
 import 'monaco-editor/esm/vs/basic-languages/html/html.contribution';

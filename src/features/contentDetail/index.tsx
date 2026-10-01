@@ -21,7 +21,7 @@ import type { PageMode } from "./utils/pageMode";
 import { contentFormSchema, type ContentFormValues } from "./utils/schema";
 import { MAIN_TABS, type ErrorLocation, type MainTab } from "./utils/tabs";
 
-/** 在纵向 flex 容器中占满剩余高度（minHeight: 0 让内部可以出现滚动条） */
+/** 縦方向の flex コンテナで残りの高さを埋める（minHeight: 0 で内部にスクロールバーを出せる） */
 const FILL = {
   flex: 1,
   minHeight: 0,
@@ -91,7 +91,7 @@ type Props = {
 };
 
 export function ContentDetailPage({ mode }: Props) {
-  // 用 schema 统一校验（未挂载的 tab / section 里的字段也会被校验），非活性的项目除外
+  // schema でまとめて検証する（未マウントのタブ / section の項目も検証される）。非活性の項目は除く
   const resolver = useMemo(
     () =>
       skipDisabledErrors(zodResolver(contentFormSchema), (values) =>
@@ -118,13 +118,13 @@ export function ContentDetailPage({ mode }: Props) {
   const isDisabled = useFieldControl(form, mode, controlFields, {
     onSelectSection: setSectionIndex,
   });
-  // form 始终是同一个对象，所以只在活性状态变化时才生成新值
+  // form は常に同じオブジェクトなので、活性状態が変わったときだけ新しい値を作る
   const context = useMemo(() => ({ form, isDisabled }), [form, isDisabled]);
 
   return (
-    // context 的值是稳定的，本组件重渲染（切换 tab 等）不会波及下层的 memo 组件
+    // context の値は安定しているため、このコンポーネントの再レンダリング（タブ切替など）は下層の memo コンポーネントに波及しない
     <ContentDetailContext.Provider value={context}>
-      {/* 整个页面固定为视口高度、不滚动；超出的内容在各 tab 内部滚动 */}
+      {/* ページ全体をビューポートの高さに固定し、スクロールしない。はみ出す内容は各タブの内部でスクロール */}
       <Box
         component="form"
         noValidate
@@ -136,7 +136,7 @@ export function ContentDetailPage({ mode }: Props) {
           overflow: "hidden",
         }}
       >
-        {/* 标题栏 + tab 栏：高度固定，始终显示在顶部 */}
+        {/* タイトルバー + タブバー：高さ固定で、常に上部に表示 */}
         <Box sx={{ flexShrink: 0 }}>
           <Header onDraft={onDraft} onCancel={onCancel} />
           <Tabs
@@ -155,8 +155,8 @@ export function ContentDetailPage({ mode }: Props) {
           </Tabs>
         </Box>
 
-        {/* 占满剩余高度，底部与视口保持 4px。
-            首次显示时挂载，之后只隐藏不卸载：再次切换时无需重建（尤其是编辑器） */}
+        {/* 残りの高さを埋め、下端はビューポートと 4px 空ける。
+            初めて表示したときにマウントし、以降は非表示にするだけでアンマウントしない：再度切り替えても作り直さない（特にエディタ） */}
         <Box
           sx={{
             flex: 1,
@@ -174,7 +174,7 @@ export function ContentDetailPage({ mode }: Props) {
               onSectionChange={setSectionIndex}
             />
           </KeepAliveTabPanel>
-          {/* 属性：内容超出时在 tab 内滚动 */}
+          {/* 属性：内容がはみ出す場合はタブ内でスクロール */}
           <KeepAliveTabPanel
             active={tab === "attributes"}
             sx={{ ...FILL, overflowY: "auto" }}

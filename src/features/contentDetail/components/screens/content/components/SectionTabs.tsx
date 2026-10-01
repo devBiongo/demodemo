@@ -16,10 +16,10 @@ export function SectionTabs({ value, onChange }: Props) {
     <Stack
       direction="row"
       role="tablist"
-      // 没有自己的背景和边框，白色的 tab 直接排列在页面的灰色背景上。
-      // overflowX: auto 会把超出部分裁掉（纵向也会），选中框向外 1px 的阴影会缺上下两边；
-      // 所以四周留 2px 内边距，再用 -2px 外边距抵消，位置不变
-      // flexShrink: 0：在纵向 flex 布局中高度不被压缩
+      // 自身の背景と枠線は持たず、白いタブをページの灰色の背景の上に直接並べる。
+      // overflowX: auto ははみ出した部分を切り取る（縦方向も）ため、選択枠の外側 1px の影の上下が欠ける。
+      // そのため四辺に 2px の内側の余白を取り、-2px の外側の余白で打ち消す（位置は変わらない）
+      // flexShrink: 0：縦方向の flex レイアウトで高さが縮まないようにする
       sx={{ gap: 0.75, overflowX: 'auto', p: '2px', m: '-2px', flexShrink: 0 }}
     >
       {Array.from({ length: SECTION_COUNT }, (_, i) => (
@@ -35,7 +35,7 @@ type TabProps = {
   onSelect: (index: number) => void;
 };
 
-/** tab 名可直接编辑；只订阅自己的 name 字段 */
+/** タブ名は直接編集できる。自分の name 項目だけを購読する */
 const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProps) {
   const { control } = useContentForm();
   const name = sectionField(index, 'name');
@@ -56,20 +56,20 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
       sx={{
         display: 'flex',
         alignItems: 'center',
-        // 圆圈到右侧输入框的距离，与到上 / 下 / 左边框的距离一致（4px）
+        // 丸から右の入力欄までの距離を、上 / 下 / 左の枠線までの距離と揃える（4px）
         gap: 0.5,
         width: 150,
         height: 34,
         flexShrink: 0,
-        // 左内边距 = (内高 32 - 圆圈 24) / 2 = 4px，与圆圈到上边框的距离一致
+        // 左の内側の余白 = (内側の高さ 32 - 丸 24) / 2 = 4px。丸から上の枠線までの距離と揃える
         pl: 0.5,
         pr: 1,
         cursor: 'pointer',
-        // 白色卡片；选中（或出错）时整圈边框变为主色（错误色）。
-        // 用 border + 外侧 1px 阴影呈现 2px 的效果：尺寸不变，内部间距也不会被压缩
-        // 选中（或出错）时铺一层很淡的主色（错误色）。
-        // 用 lighten 混入白色得到不透明的颜色，避免半透明色叠在灰色页面背景上发灰。
-        // 非活性时为灰色背景（与主题中非活性输入框的颜色一致），选中状态仍由边框和圆圈表示
+        // 白いカード。選択時（またはエラー時）は枠線全体をメインカラー（エラー色）にする。
+        // border + 外側 1px の影で 2px に見せる：サイズは変わらず、内側の間隔も詰まらない
+        // 選択時（またはエラー時）はごく薄いメインカラー（エラー色）を敷く。
+        // lighten で白を混ぜた不透明な色を使い、半透明の色が灰色のページ背景に重なってくすむのを防ぐ。
+        // 非活性時は灰色の背景（テーマの非活性の入力欄と同じ色）。選択状態は引き続き枠線と丸で示す
         bgcolor: (t) =>
           disabled
             ? t.palette.grey[100]
@@ -87,7 +87,7 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
     >
       <Box
         sx={{
-          // 圆形编号
+          // 丸い番号
           width: 24,
           height: 24,
           flexShrink: 0,
@@ -113,13 +113,13 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
           sx={{
             flex: 1,
             minWidth: 0,
-            // 文字不随选中状态变化（只有出错时变红）。非活性时的灰色文字由 MUI 处理
+            // 文字は選択状態によって変えない（エラー時だけ赤くする）。非活性時の灰色の文字は MUI が処理する
             fontSize: 14,
             color: error ? 'error.main' : 'text.primary',
             '& .MuiInputBase-input': { px: 0.75, py: 0.5 },
-            // 非活性时点击穿透到 tab 本身，仍可切换 section
+            // 非活性時はクリックをタブ本体に通し、section の切替はできるようにする
             pointerEvents: disabled ? 'none' : undefined,
-            // 不使用主题里非活性输入框的灰色背景（tab 本身已有背景）
+            // テーマの非活性の入力欄の灰色の背景は使わない（タブ自体に背景がある）
             '&.Mui-disabled': { bgcolor: 'transparent' },
           }}
         />

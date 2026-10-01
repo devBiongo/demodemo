@@ -10,14 +10,14 @@ type ContentDetailContextValue = {
 };
 
 /**
- * 表单实例 + 各项目活性状态的 context（代替 RHF 的 FormProvider）。
+ * フォームのインスタンス + 各項目の活性状態の context（RHF の FormProvider の代わり）。
  *
- * FormProvider 每次渲染都会生成新的 context 值，提供方一重渲染（切换 tab 等），
- * 所有 useFormContext 的组件都会跟着重渲染（memo 也挡不住）。
- * useForm 的返回值始终是同一个对象，所以本 context 的值只在活性状态变化时才更新。
+ * FormProvider はレンダリングのたびに新しい context の値を作るため、提供側が再レンダリングされると（タブ切替など）、
+ * useFormContext を使うすべてのコンポーネントも再レンダリングされる（memo でも防げない）。
+ * useForm の戻り値は常に同じオブジェクトなので、この context の値は活性状態が変わったときだけ更新される。
  *
- * 注意：不要从 form 读取 formState 的状态（isDirty、errors 等），不会触发重渲染。
- * 需要时用 useFormState / useController。
+ * 注意：form から formState の状態（isDirty、errors など）を読まないこと。再レンダリングが発生しない。
+ * 必要な場合は useFormState / useController を使う。
  */
 export const ContentDetailContext = createContext<ContentDetailContextValue | null>(null);
 
@@ -27,5 +27,5 @@ export function useContentDetailContext() {
   return ctx;
 }
 
-/** 表单实例 */
+/** フォームのインスタンス */
 export const useContentForm = () => useContentDetailContext().form;

@@ -1,23 +1,23 @@
 import { Box, ButtonBase } from "@mui/material";
-// CKEditor 自带的「ソース」图标（只取 SVG 文字，不会把 ckeditor5 本体打进首屏）
+// CKEditor 標準の「ソース」アイコン（SVG の文字列だけを取り込み、ckeditor5 本体は初期表示の bundle に含めない）
 import sourceIcon from "@ckeditor/ckeditor5-icons/theme/icons/source.svg?raw";
 
 type Props = {
-  /** source 模式中（按下状态） */
+  /** source モード中（押下状態） */
   pressed: boolean;
   disabled?: boolean;
   onClick: () => void;
 };
 
 /**
- * 切换 source / wysiwyg 的按钮。放在 CKEditor 工具栏的后面，外观与 CKEditor 的按钮一致
- * （颜色、尺寸都使用 CKEditor 的 CSS 变量，括号内为变量未加载时的默认值）。
- * 不属于 CKEditor，所以 CKEditor 工具栏非活性时也可以点击。
+ * source / wysiwyg を切り替えるボタン。CKEditor のツールバーの後ろに置き、見た目は CKEditor のボタンと同じ
+ * （色・サイズは CKEditor の CSS 変数を使う。括弧内は変数が読み込まれていない場合の既定値）。
+ * CKEditor の一部ではないので、CKEditor のツールバーが非活性でもクリックできる。
  */
 export function SourceToggleButton({ pressed, disabled = false, onClick }: Props) {
   return (
     <>
-      {/* 与 CKEditor 工具栏的分隔线相同 */}
+      {/* CKEditor のツールバーの区切り線と同じ */}
       <Box
         sx={{
           flexShrink: 0,
@@ -56,13 +56,13 @@ export function SourceToggleButton({ pressed, disabled = false, onClick }: Props
           "&.Mui-focusVisible": {
             outline: "1px solid var(--ck-color-focus-border, hsl(208, 79%, 51%))",
           },
-          // 非活性：与 CKEditor 相同，图标和文字变淡
+          // 非活性：CKEditor と同じく、アイコンと文字を薄くする
           "&.Mui-disabled > *": { opacity: "var(--ck-disabled-opacity, .5)" },
         }}
       >
         <Box
           component="span"
-          // 静态的 SVG 资源（非用户输入）
+          // 静的な SVG リソース（ユーザー入力ではない）
           dangerouslySetInnerHTML={{ __html: sourceIcon }}
           sx={{
             display: "flex",

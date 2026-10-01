@@ -8,7 +8,7 @@ type Props = {
   onClose: () => void;
 };
 
-/** タイトル + 当前 section 正文的预览（打开时取一次值） */
+/** タイトル + 現在の section の本文のプレビュー（開いたときに一度だけ値を取得） */
 export function PreviewDialog({ sectionIndex, onClose }: Props) {
   const { getValues } = useContentForm();
   const [title, body] = getValues(['content.title', sectionField(sectionIndex, 'body')]);

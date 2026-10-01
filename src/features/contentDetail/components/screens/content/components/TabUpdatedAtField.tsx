@@ -8,7 +8,7 @@ type Props = {
   index: number;
 };
 
-/** タブ更新日時：显示在正文编辑器工具栏的左侧 */
+/** タブ更新日時：本文エディタのツールバーの左側に表示 */
 export function TabUpdatedAtField({ index }: Props) {
   const { control } = useContentForm();
   const { isDisabled } = useFieldAccess();

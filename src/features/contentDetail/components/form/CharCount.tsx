@@ -8,12 +8,12 @@ type Props<T extends FieldValues> = {
 };
 
 /**
- * 显示字段的文字数量；没有值时不显示。
- * 单独订阅该字段，输入时只有本组件重渲染。
+ * 項目の文字数を表示する。値がない場合は表示しない。
+ * この項目だけを購読するので、入力中に再レンダリングされるのはこのコンポーネントだけ。
  */
 export function CharCount<T extends FieldValues>({ name, control, sx }: Props<T>) {
   const value: string = useWatch({ control, name }) ?? '';
-  // 按 Unicode 字符计数（emoji 等代理对算 1 个字）
+  // Unicode の文字単位で数える（絵文字などのサロゲートペアも 1 文字）
   const count = [...value].length;
   if (count === 0) return null;
 

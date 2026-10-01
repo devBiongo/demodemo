@@ -16,7 +16,7 @@ type Props<T extends FieldValues> = {
 
 const timeInputProps = { htmlInput: { inputMode: 'numeric', maxLength: 2, style: { textAlign: 'center' } } } as const;
 
-/** 日期 + 时 + 分，三个子字段分别受控，互不影响重渲染 */
+/** 日付 + 時 + 分。3 つのサブ項目はそれぞれ制御され、再レンダリングは互いに影響しない */
 export function RHFDateTimeParts<T extends FieldValues>({ name, control, disabled }: Props<T>) {
   const part = (key: keyof DateTimeParts) => `${name}.${key}` as FieldPath<T>;
 

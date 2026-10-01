@@ -31,10 +31,10 @@ export function AiAssistedField({ aiName, textName, label, minRows = 2 }: Props)
           minRows={minRows}
           fullWidth
           disabled={isDisabled(textName)}
-          // 底部留出显示文字数量的空间，避免与最后一行文字重叠
+          // 下に文字数を表示する余白を取り、最後の行の文字と重ならないようにする
           sx={{ '& .MuiInputBase-multiline': { pb: 2.5 } }}
         />
-        {/* 文字数量：显示在输入框内的右下角 */}
+        {/* 文字数：入力欄の内側の右下に表示 */}
         <CharCount control={control} name={textName} sx={{ position: 'absolute', right: 12, bottom: 7 }} />
       </Box>
     </Stack>

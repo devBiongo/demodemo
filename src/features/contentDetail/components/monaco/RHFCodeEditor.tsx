@@ -9,26 +9,26 @@ export type RHFCodeEditorProps<T extends FieldValues> = {
   height: EditorProps['height'];
   language?: string;
   /**
-   * 每个 path 对应一个独立的 model（内容、撤销历史、光标位置）。
-   * 切换 name/path 时复用同一个编辑器实例，只切换 model。
+   * path ごとに独立した model（内容・元に戻す履歴・カーソル位置）を持つ。
+   * name/path が変わっても同じエディタインスタンスを使い、model だけを切り替える。
    */
   path: string;
   onMount?: OnMount;
   options?: EditorProps['options'];
-  /** 非活性（只读） */
+  /** 非活性（読み取り専用） */
   disabled?: boolean;
   /**
-   * 是否显示中（默认 true）。false 期间不同步表单值（隐藏时不改写内容），
-   * 变回 true 时读取一次当前表单值
+   * 表示中かどうか（省略時 true）。false の間はフォームの値を同期しない（非表示中は内容を書き換えない）。
+   * true に戻った時点で現在のフォームの値を読み込む
    */
   active?: boolean;
-  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 隐藏 / 卸载时会立即写回 */
+  /** 編集内容をフォームに書き戻すデバウンス時間（ms）。フォーカスが外れた時 / name 切替 / 非表示 / アンマウント時はすぐに書き戻す */
   debounceMs?: number;
 };
 
 const Impl = lazy(() => import('./RHFCodeEditor.impl'));
 
-/** 懒加载 Monaco，首屏和不用编辑器的页面不会加载它 */
+/** Monaco を遅延読み込みする。初期表示やエディタを使わないページでは読み込まない */
 export function RHFCodeEditor<T extends FieldValues>(props: RHFCodeEditorProps<T>) {
   return (
     <Suspense fallback={<EditorFallback height={props.height} />}>

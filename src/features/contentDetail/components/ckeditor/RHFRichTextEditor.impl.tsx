@@ -18,10 +18,10 @@ const applyToolbarDisabled = (editor: ClassicEditor, disabled: boolean) =>
   editor.ui.view.toolbar.element?.toggleAttribute('inert', disabled);
 
 /**
- * 非受控的 CKEditor：
- * - 输入时不触发 React 渲染，按 debounceMs 防抖写回表单（getData 需要序列化整篇内容，开销较大）
- * - 失焦 / 卸载时立即写回
- * - 表单值被外部修改（reset、setValue 等）时同步到编辑器
+ * 非制御の CKEditor：
+ * - 入力中は React のレンダリングを発生させず、debounceMs のデバウンスでフォームに書き戻す（getData は本文全体をシリアライズするため負荷が大きい）
+ * - フォーカスが外れた時 / アンマウント時はすぐに書き戻す
+ * - フォームの値が外部で変更された（reset、setValue など）ときはエディタに反映する
  */
 export default function RHFRichTextEditorImpl<T extends FieldValues>({
   name,
@@ -36,10 +36,10 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
   const formValueRef = useRef(formValue);
   formValueRef.current = formValue;
 
-  // 只作为初始值传给 CKEditor，之后不再变化
+  // CKEditor には初期値としてだけ渡し、以降は変えない
   const [initialData] = useState(formValue);
   const editorRef = useRef<ClassicEditor | null>(null);
-  /** 已知与编辑器内容一致的表单值 */
+  /** エディタの内容と一致していることが分かっているフォームの値 */
   const syncedRef = useRef(formValue);
   const pendingRef = useRef(false);
   const suppressRef = useRef(false);
@@ -57,7 +57,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
     writeField(control, name, value);
   });
 
-  /** 把表单值同步进编辑器（不触发写回） */
+  /** フォームの値をエディタに反映する（書き戻しは発生させない） */
   const syncFromForm = (editor: ClassicEditor, value: string) => {
     window.clearTimeout(timerRef.current);
     pendingRef.current = false;
@@ -72,7 +72,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
     if (editor && formValue !== syncedRef.current) syncFromForm(editor, formValue);
   }, [formValue]);
 
-  // 卸载前写回（父组件的 cleanup 先于 CKEditor 自身的销毁执行）
+  // アンマウント前に書き戻す（親の cleanup は CKEditor 自身の破棄より先に実行される）
   useEffect(() => () => flushRef.current(), []);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
         onReady={(editor) => {
           editorRef.current = editor;
           applyToolbarDisabled(editor, disabledRef.current);
-          // 加载期间表单值可能已被修改（例如切换模式时另一个编辑器刚写回）
+          // 読み込み中にフォームの値が変わっている場合がある（例：モード切替で、もう一方のエディタが書き戻した直後）
           if (formValueRef.current !== initialData) syncFromForm(editor, formValueRef.current);
           onReady?.(editor);
         }}

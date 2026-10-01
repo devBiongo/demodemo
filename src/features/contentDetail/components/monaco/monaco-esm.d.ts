@@ -1,4 +1,4 @@
-// monaco-editor 的 ESM 深层入口没有自带类型声明
+// monaco-editor の ESM の深いエントリには型宣言が付属していない
 declare module 'monaco-editor/esm/vs/editor/edcore.main' {
   export * from 'monaco-editor';
 }

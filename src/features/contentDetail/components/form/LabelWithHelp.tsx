@@ -13,7 +13,7 @@ export function LabelWithHelp({ label, help }: Props) {
     <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
       {label}
       <Tooltip title={help} arrow>
-        {/* 防止点击帮助图标时触发 label 关联的 checkbox / radio */}
+        {/* ヘルプアイコンをクリックしたときに、label に紐づく checkbox / radio が反応しないようにする */}
         <HelpOutlineIcon
           sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }}
           onClick={(e) => e.preventDefault()}

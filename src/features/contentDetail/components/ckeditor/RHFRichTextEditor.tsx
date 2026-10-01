@@ -7,16 +7,16 @@ export type RHFRichTextEditorProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
   height: number | string;
-  /** 非活性（只读） */
+  /** 非活性（読み取り専用） */
   disabled?: boolean;
   onReady?: (editor: ClassicEditor) => void;
-  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 卸载时会立即写回 */
+  /** 編集内容をフォームに書き戻すデバウンス時間（ms）。フォーカスが外れた時 / アンマウント時はすぐに書き戻す */
   debounceMs?: number;
 };
 
 const Impl = lazy(() => import('./RHFRichTextEditor.impl'));
 
-/** 懒加载的 CKEditor 5（WYSIWYG）。name 变化时重新创建编辑器 */
+/** 遅延読み込みの CKEditor 5（WYSIWYG）。name が変わるとエディタを作り直す */
 export function RHFRichTextEditor<T extends FieldValues>(props: RHFRichTextEditorProps<T>) {
   return (
     <Suspense fallback={<EditorFallback height={props.height} />}>

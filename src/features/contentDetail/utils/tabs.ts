@@ -12,7 +12,7 @@ export const MAIN_TABS: { value: MainTab; label: string }[] = [
 
 export type ErrorLocation = { tab: MainTab; section?: number };
 
-/** 根据校验错误定位到应当显示的 tab / section */
+/** 検証エラーから、表示すべきタブ / section を特定する */
 export function locateFirstError(errors: FieldErrors<ContentFormValues>): ErrorLocation | undefined {
   if (errors.content) {
     const sections = errors.content.sections;

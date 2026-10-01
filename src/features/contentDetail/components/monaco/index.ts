@@ -1,7 +1,7 @@
-// Monaco 相关文件集中在此目录：
-//   setup.ts               Monaco 初始化（只加载核心 + HTML、worker、本地加载）
-//   monaco-esm.d.ts        ESM 深层入口的类型声明
-//   RHFCodeEditor.tsx      懒加载入口（对外公开）
-//   RHFCodeEditor.impl.tsx 实现（非受控、防抖写回、多 model）
-// 外部只从这里 import；setup / impl 只会被懒加载的 chunk 引用。
+// Monaco 関連のファイルはこのディレクトリにまとめる：
+//   setup.ts               Monaco の初期化（コア + HTML のみ読み込み、worker、ローカル読み込み）
+//   monaco-esm.d.ts        ESM の深いエントリの型宣言
+//   RHFCodeEditor.tsx      遅延読み込みの入口（外部公開）
+//   RHFCodeEditor.impl.tsx 実装（非制御、デバウンスで書き戻し、複数 model）
+// 外部からはここからのみ import する。setup / impl は遅延読み込みの chunk からのみ参照される。
 export * from './RHFCodeEditor';

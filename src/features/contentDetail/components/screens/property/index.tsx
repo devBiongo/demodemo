@@ -25,7 +25,7 @@ import { FormRow } from './FormRow';
 
 const FIELD_WIDTH = 360;
 
-// memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
+// memo：非表示の間に親（タブ切替など）が再レンダリングされてもスキップ
 export const PropertyScreen = memo(function PropertyScreen() {
   const { control } = useContentForm();
   const { isDisabled } = useFieldAccess();

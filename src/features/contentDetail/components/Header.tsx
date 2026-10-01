@@ -10,10 +10,10 @@ type Props = {
   onCancel: () => void;
 };
 
-// memo：切换 tab 时父组件重渲染，props（均为 useCallback）不变则跳过
+// memo：タブ切替で親が再レンダリングされても、props（すべて useCallback）が変わらなければスキップ
 export const Header = memo(function Header({ onDraft, onCancel }: Props) {
   const { control } = useContentForm();
-  // 只在这里订阅 isSubmitting，避免整个页面随之重渲染
+  // isSubmitting はここでだけ購読し、ページ全体が再レンダリングされるのを避ける
   const { isSubmitting } = useFormState({ control });
   const { isDisabled } = useFieldAccess();
 
@@ -22,7 +22,7 @@ export const Header = memo(function Header({ onDraft, onCancel }: Props) {
       direction="row"
       alignItems="center"
       spacing={2}
-      // 位置由外层布局负责
+      // 位置は外側のレイアウトが決める
       sx={{ px: 2, py: 1, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
     >
       <Typography color="primary" fontWeight={700}>

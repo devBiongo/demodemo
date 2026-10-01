@@ -6,7 +6,7 @@ import { useFieldAccess } from '../../hooks/useFieldAccess';
 import { SECTION_COUNT } from '../../utils/schema';
 
 type Props = {
-  /** 初始显示的 section */
+  /** 最初に表示する section */
   initialIndex: number;
   onClose: () => void;
 };
@@ -16,8 +16,8 @@ const LABEL_WIDTH = 100;
 const DIFF_HEIGHT = 400;
 
 /**
- * 変更前（加载 / 上次保存时的值 = defaultValues）与 変更後（当前编辑中的值）的对比。
- * 打开时对当前值做一次快照，弹窗打开期间不随编辑变化。
+ * 変更前（読み込み時 / 前回保存時の値 = defaultValues）と 変更後（現在編集中の値）の比較。
+ * 開いたときに現在の値のスナップショットを取り、ダイアログを開いている間は編集しても変わらない。
  */
 export function CompareDialog({ initialIndex, onClose }: Props) {
   const { getValues, formState } = useContentForm();
@@ -34,7 +34,7 @@ export function CompareDialog({ initialIndex, onClose }: Props) {
       <DialogContent>
         <Tabs value={index} onChange={(_, v: number) => setIndex(v)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           {Array.from({ length: SECTION_COUNT }, (_, i) => (
-            // 与画面上的 section tab 一致：编号 + 当前的 tab 名（没有名字时只显示编号）
+            // 画面上の section タブと同じ：番号 + 現在のタブ名（名前がない場合は番号のみ）
             <Tab key={i} value={i} label={`${i + 1} ${after.sections[i].name}`.trim()} />
           ))}
         </Tabs>
@@ -57,9 +57,9 @@ export function CompareDialog({ initialIndex, onClose }: Props) {
           <TextRow label="概要" before={beforeSection?.summary} after={afterSection.summary} />
 
           <RowLabel>詳細</RowLabel>
-          {/* 滚动由 DiffViewer 自身负责（虚拟滚动） */}
+          {/* スクロールは DiffViewer 自身が担当する（仮想スクロール） */}
           <Box sx={{ gridColumn: 'span 2', p: '0 !important' }}>
-            {/* key：切换 tab 时重新计算差异 */}
+            {/* key：タブ切替時に差分を計算し直す */}
             <DiffViewer
               key={index}
               oldValue={beforeSection?.body ?? ''}
@@ -110,7 +110,7 @@ function TextRow({ label, before = '', after }: { label: string; before?: string
       </Typography>
       <Typography
         variant="body2"
-        // 有变更的项目用浅黄色标出
+        // 変更のある項目は薄い黄色で示す
         sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', bgcolor: changed ? '#fff8e1' : undefined }}
       >
         {after}

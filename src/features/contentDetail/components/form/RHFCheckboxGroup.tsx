@@ -18,7 +18,7 @@ export function RHFCheckboxGroup<T extends FieldValues>({ name, control, options
     const next = new Set(selected);
     if (checked) next.add(value);
     else next.delete(value);
-    // 保持与选项定义相同的顺序
+    // 選択肢の定義と同じ順序を保つ
     field.onChange(options.filter((o) => next.has(o.value)).map((o) => o.value));
   };
 

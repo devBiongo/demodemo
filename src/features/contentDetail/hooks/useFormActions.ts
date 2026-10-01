@@ -4,13 +4,13 @@ import type { ContentFormValues } from '../utils/schema';
 import { locateFirstError, type ErrorLocation } from '../utils/tabs';
 
 type Options = {
-  /** 校验失败时，传入第一个错误所在的 tab / section */
+  /** 検証エラー時に、最初のエラーがあるタブ / section を渡す */
   onInvalidLocated: (location: ErrorLocation) => void;
 };
 
 /**
- * 表单的提交 / 下書 / キャンセル 处理。
- * 注意：内部订阅了 isDirty，调用本 hook 的组件会随之重渲染（下层的 tab 都用 memo 包裹，不受影响）
+ * フォームの送信 / 下書 / キャンセル の処理。
+ * 注意：内部で isDirty を購読しているため、この hook を呼ぶコンポーネントはそれに伴って再レンダリングされる（下層のタブはすべて memo で包んでいるので影響しない）
  */
 export function useFormActions(form: UseFormReturn<ContentFormValues>, { onInvalidLocated }: Options) {
   const { control, handleSubmit, getValues, reset } = form;
@@ -21,7 +21,7 @@ export function useFormActions(form: UseFormReturn<ContentFormValues>, { onInval
     console.log('submit', values);
   };
 
-  // 校验失败时自动切到出错的 tab / section
+  // 検証エラー時は、エラーのあるタブ / section に自動で切り替える
   const onInvalid: SubmitErrorHandler<ContentFormValues> = (errors) => {
     const location = locateFirstError(errors);
     if (location) onInvalidLocated(location);

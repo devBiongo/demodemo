@@ -52,14 +52,14 @@ const disabledSx: SxProps<Theme> = (t) => ({
 type Pending = { model: editor.ITextModel; name: string };
 
 /**
- * 非受控的 Monaco 编辑器：
- * - 输入时不触发 React 渲染，按 debounceMs 防抖写回表单；失焦 / 切换 name / 卸载时立即写回
- * - 表单值被外部修改（reset、setValue 等）时同步到编辑器
- * - 切换 name/path 时复用同一个编辑器实例，只切换 model
+ * 非制御の Monaco エディタ：
+ * - 入力中は React のレンダリングを発生させず、debounceMs のデバウンスでフォームに書き戻す。フォーカスが外れた時 / name 切替 / アンマウント時はすぐに書き戻す
+ * - フォームの値が外部で変更された（reset、setValue など）ときはエディタに反映する
+ * - name/path が変わっても同じエディタインスタンスを使い、model だけを切り替える
  *
- * 注意：react-hook-form 7.55 的 useController / useWatch 不会跟随 name 的变化
- * （订阅只按首次的 name 建立），所以读取字段值放在以 name 为 key 的 FieldBinding 中，
- * name 变化时 FieldBinding 重新挂载，读到的一定是当前字段的值。
+ * 注意：react-hook-form 7.55 の useController / useWatch は name の変化に追従しない
+ * （購読は最初の name でのみ作られる）。そのため項目の値の読み取りは name を key とする FieldBinding で行い、
+ * name が変わると FieldBinding が再マウントされ、必ず現在の項目の値を読み取る。
  */
 export default function RHFCodeEditorImpl<T extends FieldValues>({
   name,
@@ -80,16 +80,16 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   nameRef.current = name;
   const pendingRef = useRef<Pending | null>(null);
   const timerRef = useRef<number>();
-  /** 已知与该 model 内容一致的表单值，用于跳过自己写回后引起的同步 */
+  /** その model の内容と一致していることが分かっているフォームの値。自分で書き戻したことによる同期をスキップするために使う */
   const syncedRef = useRef({ uri: "", value: "" });
-  /** 已经用表单值初始化过的 model */
+  /** フォームの値で初期化済みの model */
   const initializedRef = useRef(new Set<string>());
-  /** 程序同步 model 时屏蔽 change 监听 */
+  /** プログラムで model を同期している間は change を無視する */
   const suppressRef = useRef(false);
   const pathsRef = useRef(new Set<string>());
   pathsRef.current.add(path);
 
-  // 以下两个函数只依赖 ref，注册一次即可一直使用
+  // 以下の 2 つの関数は ref にしか依存しないので、一度登録すればずっと使える
   const flushRef = useRef(() => {
     window.clearTimeout(timerRef.current);
     const pending = pendingRef.current;
@@ -100,7 +100,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
     writeField(control, pending.name as FieldPath<T>, value);
   });
 
-  /** 把当前字段的表单值同步到当前 model */
+  /** 現在の項目のフォームの値を現在の model に反映する */
   const syncRef = useRef((value: string) => {
     const model = editorRef.current?.getModel();
     if (!model) return;
@@ -108,21 +108,21 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
     if (syncedRef.current.uri === uri && syncedRef.current.value === value)
       return;
     if (pendingRef.current?.model === model) {
-      // 外部修改优先，丢弃尚未写回的输入
+      // 外部での変更を優先し、未書き戻しの入力は破棄する
       window.clearTimeout(timerRef.current);
       pendingRef.current = null;
     }
     if (model.getValue() !== value) {
       suppressRef.current = true;
       if (initializedRef.current.has(uri)) {
-        // 外部修改：作为一次编辑，可撤销
+        // 外部での変更：1 回の編集として扱い、元に戻せる
         model.pushEditOperations(
           [],
           [{ range: model.getFullModelRange(), text: value }],
           () => null,
         );
       } else {
-        // 首次载入：不进入撤销历史
+        // 初回の読み込み：元に戻す履歴には入れない
         model.setValue(value);
       }
       suppressRef.current = false;
@@ -146,15 +146,15 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
     onMount?.(ed, m);
   };
 
-  // 切换字段或卸载前，先把未写回的内容写回原字段
+  // 項目の切替やアンマウントの前に、未書き戻しの内容を元の項目に書き戻す
   useEffect(() => () => flushRef.current(), [name]);
-  // 隐藏时立即写回：layout effect 先于其他编辑器的同步（passive effect）执行
+  // 非表示になったらすぐに書き戻す：layout effect は他のエディタの同期（passive effect）より先に実行される
   useLayoutEffect(() => {
     if (!active) flushRef.current();
   }, [active]);
 
-  // 卸载时释放本组件创建过的所有 model（等编辑器自身销毁后再做；
-  // StrictMode 的模拟卸载后会立即重新挂载，此时跳过）
+  // アンマウント時に、このコンポーネントが作成したすべての model を破棄する（エディタ自身の破棄の後に行う。
+  // StrictMode の疑似アンマウントの後はすぐに再マウントされるので、その場合はスキップ）
   const mountedRef = useRef(false);
   useEffect(() => {
     mountedRef.current = true;
@@ -176,9 +176,9 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   );
 
   return (
-    // 外框与编辑器同高：height 为百分比时，相对的是本组件的父元素
+    // 外枠はエディタと同じ高さ：height がパーセント指定の場合、このコンポーネントの親要素が基準になる
     <Box style={{ height }} sx={disabled ? disabledSx : undefined}>
-      {/* model 由 Editor 按 path 创建（初始为空），内容由 FieldBinding 同步 */}
+      {/* model は Editor が path ごとに作成し（初期は空）、内容は FieldBinding が同期する */}
       <Editor
         height={height}
         language={language}
@@ -186,7 +186,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
         onMount={handleMount}
         options={mergedOptions}
       />
-      {/* 放在 Editor 之后：其 effect 在 Editor 切换 model 之后执行 */}
+      {/* Editor の後ろに置く：その effect は Editor が model を切り替えた後に実行される */}
       <FieldBinding
         key={name}
         control={control}
@@ -201,12 +201,12 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
 type FieldBindingProps<T extends FieldValues> = {
   control: Control<T>;
   name: FieldPath<T>;
-  /** 编辑器就绪且显示中 */
+  /** エディタの準備ができていて、表示中 */
   enabled: boolean;
   syncRef: MutableRefObject<(value: string) => void>;
 };
 
-/** 订阅单个字段的值，变化时同步到编辑器。以 name 为 key 使用 */
+/** 1 つの項目の値を購読し、変わったらエディタに反映する。name を key にして使う */
 function FieldBinding<T extends FieldValues>({
   control,
   name,

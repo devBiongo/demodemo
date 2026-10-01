@@ -6,25 +6,25 @@ import { EditorFallback } from '../EditorFallback';
 export type RHFDocumentEditorProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
-  /** 放置工具栏的元素。编辑区显示在本组件所在的位置 */
+  /** ツールバーを配置する要素。編集領域はこのコンポーネントの位置に表示される */
   toolbarContainer: HTMLElement | null;
-  /** 非活性（只读） */
+  /** 非活性（読み取り専用） */
   disabled?: boolean;
   /**
-   * 是否显示中（默认 true）。false 期间不同步表单值（隐藏时不 setData），工具栏也变为非活性；
-   * 变回 true 时读取一次当前表单值
+   * 表示中かどうか（省略時 true）。false の間はフォームの値を同期せず（非表示中は setData しない）、ツールバーも非活性にする。
+   * true に戻った時点で現在のフォームの値を読み込む
    */
   active?: boolean;
   onReady?: (editor: DecoupledEditor) => void;
-  /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 隐藏 / 卸载时会立即写回 */
+  /** 編集内容をフォームに書き戻すデバウンス時間（ms）。フォーカスが外れた時 / name 切替 / 非表示 / アンマウント時はすぐに書き戻す */
   debounceMs?: number;
 };
 
 const Impl = lazy(() => import('./RHFDocumentEditor.impl'));
 
 /**
- * 懒加载的 CKEditor 5（DecoupledEditor）：工具栏与编辑区可以分开放置。
- * name 变化时复用同一个实例，只替换内容
+ * 遅延読み込みの CKEditor 5（DecoupledEditor）：ツールバーと編集領域を別々の場所に置ける。
+ * name が変わっても同じインスタンスを使い、内容だけを入れ替える
  */
 export function RHFDocumentEditor<T extends FieldValues>(props: RHFDocumentEditorProps<T>) {
   return (

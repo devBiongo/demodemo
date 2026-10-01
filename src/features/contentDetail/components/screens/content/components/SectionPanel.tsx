@@ -12,8 +12,8 @@ type Props = {
 };
 
 /**
- * 6 个 section 结构相同，只是字段路径的 index 不同。
- * 正文编辑器（SectionBodyEditor）不在这里，以便切换 section 时复用编辑器实例。
+ * 6 つの section は同じ構造で、項目のパスの index だけが異なる。
+ * 本文エディタ（SectionBodyEditor）はここには置かない。section を切り替えてもエディタのインスタンスを再利用するため。
  */
 export function SectionPanel({ index }: Props) {
   const { control } = useContentForm();
