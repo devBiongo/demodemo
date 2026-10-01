@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useDeferredValue, useState } from 'react';
 import { Paper, Stack } from '@mui/material';
 import { PreviewDialog } from '../../modals/PreviewDialog';
 import { SectionBodyEditor } from './components/SectionBodyEditor';
@@ -15,6 +15,8 @@ type Props = {
 // memo：隐藏期间父组件（切换 tab 等）重渲染时跳过
 export const ContentScreen = memo(function ContentScreen({ sectionIndex, onSectionChange }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
+  // tab 的选中状态立即更新；下方内容用延后的值，在 tab 先显示为选中之后再渲染
+  const contentIndex = useDeferredValue(sectionIndex);
 
   return (
     // 标题卡片 与 section tab 之间 8px。占满父容器高度，内容卡片在内部滚动
@@ -28,21 +30,25 @@ export const ContentScreen = memo(function ContentScreen({ sectionIndex, onSecti
         <SectionTabs value={sectionIndex} onChange={onSectionChange} />
         {/* 占满剩余高度（底部贴近视口）；放不下时在卡片内部滚动 */}
         <Paper variant="outlined" sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-          {/* useFlexGap：用 gap 实现间距。否则 Stack 给子元素加的 margin-top 会让
-              全屏编辑（position: fixed; inset: 0）的编辑器顶部空出 16px */}
-          <Stack spacing={2} useFlexGap sx={{ p: 2 }} role="tabpanel">
-            {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
-            <SectionPanel key={sectionIndex} index={sectionIndex} />
-            {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
-            <SectionBodyEditor
-              index={sectionIndex}
-              toolbarStart={<TabUpdatedAtField key={sectionIndex} index={sectionIndex} />}
-            />
-          </Stack>
+          <SectionContent index={contentIndex} />
         </Paper>
       </Stack>
 
-      {previewOpen && <PreviewDialog sectionIndex={sectionIndex} onClose={() => setPreviewOpen(false)} />}
+      {previewOpen && <PreviewDialog sectionIndex={contentIndex} onClose={() => setPreviewOpen(false)} />}
+    </Stack>
+  );
+});
+
+/** section 的内容区。memo：tab 先切换的那次渲染（index 未变）时跳过 */
+const SectionContent = memo(function SectionContent({ index }: { index: number }) {
+  return (
+    // useFlexGap：用 gap 实现间距。否则 Stack 给子元素加的 margin-top 会让
+    // 全屏编辑（position: fixed; inset: 0）的编辑器顶部空出 16px
+    <Stack spacing={2} useFlexGap sx={{ p: 2 }} role="tabpanel">
+      {/* 普通字段：key 切换时重新挂载，各 section 互不干扰 */}
+      <SectionPanel key={index} index={index} />
+      {/* 编辑器：不加 key，切换 section 时复用同一实例 */}
+      <SectionBodyEditor index={index} toolbarStart={<TabUpdatedAtField key={index} index={index} />} />
     </Stack>
   );
 });

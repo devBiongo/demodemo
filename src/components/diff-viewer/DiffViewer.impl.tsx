@@ -15,10 +15,11 @@ const STYLES: ReactDiffViewerStylesOverride = {
 
 const countLines = (s: string) => (s ? s.split('\n').length : 1);
 
-export default function DiffViewerImpl({ oldValue, newValue, language, maxHeight }: DiffViewerProps) {
+export default function DiffViewerImpl({ oldValue, newValue, language, maxHeight, height }: DiffViewerProps) {
   // 虚拟滚动：只渲染可见范围内的行，行数再多 DOM 数量也基本固定。
-  // 容器高度是固定的，所以按行数估算，内容少时不留大片空白；最高不超过 maxHeight（默认屏幕高度的一半）
+  // 容器高度是固定的，未指定 height 时按行数估算，内容少时不留大片空白；最高不超过 maxHeight（默认屏幕高度的一半）
   const infiniteLoading = useMemo(() => {
+    if (height !== undefined) return { pageSize: 50, containerHeight: `${height}px` };
     const limit = maxHeight ?? Math.round(window.innerHeight / 2);
     const estimated = Math.max(countLines(oldValue), countLines(newValue)) * ROW_HEIGHT + SUMMARY_HEIGHT;
     return {
@@ -26,7 +27,7 @@ export default function DiffViewerImpl({ oldValue, newValue, language, maxHeight
       pageSize: 50,
       containerHeight: `${Math.min(estimated, limit)}px`,
     };
-  }, [oldValue, newValue, maxHeight]);
+  }, [oldValue, newValue, maxHeight, height]);
 
   return (
     <ReactDiffViewer

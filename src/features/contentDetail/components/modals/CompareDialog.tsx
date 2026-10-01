@@ -12,6 +12,8 @@ type Props = {
 };
 
 const LABEL_WIDTH = 100;
+/** 詳細（差分）の高さ。切り替えても変わらないよう固定 */
+const DIFF_HEIGHT = 400;
 
 /**
  * 変更前（加载 / 上次保存时的值 = defaultValues）与 変更後（当前编辑中的值）的对比。
@@ -58,7 +60,13 @@ export function CompareDialog({ initialIndex, onClose }: Props) {
           {/* 滚动由 DiffViewer 自身负责（虚拟滚动） */}
           <Box sx={{ gridColumn: 'span 2', p: '0 !important' }}>
             {/* key：切换 tab 时重新计算差异 */}
-            <DiffViewer key={index} oldValue={beforeSection?.body ?? ''} newValue={afterSection.body} language="html" />
+            <DiffViewer
+              key={index}
+              oldValue={beforeSection?.body ?? ''}
+              newValue={afterSection.body}
+              language="html"
+              height={DIFF_HEIGHT}
+            />
           </Box>
         </Box>
       </DialogContent>
