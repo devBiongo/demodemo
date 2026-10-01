@@ -7,7 +7,7 @@ import {
   RHFRadioGroup,
   RHFSelect,
   RHFTextField,
-} from '../../../../../components/form';
+} from '../../form';
 import { useContentForm } from '../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../hooks/useFieldAccess';
 import {

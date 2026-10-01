@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useFormState } from 'react-hook-form';
-import { RHFTextField } from '../../../components/form';
+import { RHFTextField } from './form';
 import { useContentForm } from '../hooks/useContentForm';
 import { useFieldAccess } from '../hooks/useFieldAccess';
 

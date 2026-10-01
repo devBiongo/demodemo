@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { RHFTextField } from '../../../../../../components/form';
+import { RHFTextField } from '../../../form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import { sectionField } from '../../../../utils/fieldPath';

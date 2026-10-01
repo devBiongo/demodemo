@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
-import { HtmlPreview } from '../../../../components/HtmlPreview';
+import { HtmlPreview } from '../HtmlPreview';
 import { useContentForm } from '../../hooks/useContentForm';
 import { sectionField } from '../../utils/fieldPath';
 

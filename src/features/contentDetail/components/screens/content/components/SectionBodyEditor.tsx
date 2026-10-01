@@ -6,7 +6,7 @@ import {
   HybridHtmlEditor,
   type HybridEditorMode,
   type HybridHtmlEditorHandle,
-} from "../../../../../../components/hybrid-editor";
+} from "../../../hybrid-editor";
 import { useContentForm } from "../../../../hooks/useContentForm";
 import { useFieldAccess } from "../../../../hooks/useFieldAccess";
 import { sectionField } from "../../../../utils/fieldPath";

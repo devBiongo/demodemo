@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { KeepAliveTabPanel } from "../../components/KeepAliveTabPanel";
+import { KeepAliveTabPanel } from "./components/KeepAliveTabPanel";
 import { Header } from "./components/Header";
 import { ContentScreen } from "./components/screens/content";
 import { PropertyScreen } from "./components/screens/property";

@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import { RHFCheckbox, RHFSelect, RHFTextField } from '../../../../../../components/form';
+import { RHFCheckbox, RHFSelect, RHFTextField } from '../../../form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import { sectionField } from '../../../../utils/fieldPath';

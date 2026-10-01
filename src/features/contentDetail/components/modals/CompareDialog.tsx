@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, Tab, Tabs, Typography } from '@mui/material';
-import { DiffViewer } from '../../../../components/diff-viewer';
+import { DiffViewer } from '../diff-viewer';
 import { useContentForm } from '../../hooks/useContentForm';
 import { useFieldAccess } from '../../hooks/useFieldAccess';
 import { SECTION_COUNT } from '../../utils/schema';

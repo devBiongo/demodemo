@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import type { FieldPathByValue } from 'react-hook-form';
-import { CharCount, RHFCheckbox, RHFTextField } from '../../../../../../components/form';
+import { CharCount, RHFCheckbox, RHFTextField } from '../../../form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import type { ContentFormValues } from '../../../../utils/schema';

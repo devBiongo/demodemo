@@ -1,4 +1,4 @@
-import type { Option } from '../../../components/form';
+import type { Option } from '../components/form';
 import type { Attributes, Section } from './schema';
 
 // ---------- コンテンツ ----------
