@@ -36,46 +36,69 @@ export type FieldControlApi = {
   enable: (...targets: FieldTarget[]) => void;
   /** すべて非活性 */
   disableAll: () => void;
-  /** targets 配下で「この時点で非活性」の項目をクリアする */
-  clearDisabled: (...targets: FormPath[]) => void;
+  /**
+   * 値を空にする（活性 / 非活性とは無関係）。親を指定すると配下すべて。
+   * ユーザーの操作に応じて実行される（送信時の検証では実行しない）。
+   * 毎回の入力で呼ばれるため、通常は changed で条件を付ける
+   */
+  clear: (...targets: FormPath[]) => void;
+  /** clear の対象から外す（後から指定したものが優先） */
+  keep: (...targets: FormPath[]) => void;
+  /**
+   * コンテンツ画面のタブ（section）を選択する。0 始まり。
+   * clear と同じくユーザーの操作に応じて実行されるため、通常は changed で条件を付ける
+   * （付けないと入力のたびにこのタブに戻り、ユーザーがタブを切り替えられない）
+   */
+  selectSection: (index: number) => void;
 };
 
-/** 画面項目の活性 / 非活性を決める関数 */
+/** 画面項目の活性 / 非活性・値のクリアを決める関数 */
 export type FieldController = (ctx: FieldControlContext, field: FieldControlApi) => void;
 
 export type IsDisabled = (target: FieldTarget) => boolean;
 
-/** [対象, 非活性か]。'' はすべて */
+/** [対象, true/false]。'' はすべて */
 type Op = readonly [string, boolean];
 
 export type Evaluation = {
+  /** disable(true) / enable(false) */
   ops: Op[];
-  /** [クリア対象, その時点までの ops の件数] */
-  clears: [FormPath, number][];
+  /** clear(true) / keep(false) */
+  clearOps: Op[];
+  /** selectSection で指定された section（複数回呼んだ場合は最後のもの） */
+  section?: number;
 };
 
 export function evaluate(controller: FieldController, ctx: FieldControlContext): Evaluation {
   const ops: Op[] = [];
-  const clears: [FormPath, number][] = [];
+  const clearOps: Op[] = [];
+  let section: number | undefined;
   controller(ctx, {
     disable: (...targets) => targets.forEach((t) => ops.push([t, true])),
     enable: (...targets) => targets.forEach((t) => ops.push([t, false])),
     disableAll: () => ops.push(['', true]),
-    clearDisabled: (...targets) => targets.forEach((t) => clears.push([t, ops.length])),
+    clear: (...targets) => targets.forEach((t) => clearOps.push([t, true])),
+    keep: (...targets) => targets.forEach((t) => clearOps.push([t, false])),
+    selectSection: (index) => {
+      section = index;
+    },
   });
-  return { ops, clears };
+  return { ops, clearOps, section };
 }
 
-/** 後から指定したものが優先。どこにも指定されていない項目は活性 */
-export const createIsDisabled =
-  (ops: readonly Op[]): IsDisabled =>
-  (target) => {
-    let disabled = false;
+/** 対象に当てはまる指定のうち、最後のものを返す（親の指定は配下にも当てはまる）。指定なしは false */
+const createMatcher =
+  (ops: readonly Op[]) =>
+  (target: string): boolean => {
+    let result = false;
     for (const [prefix, value] of ops) {
-      if (prefix === '' || target === prefix || target.startsWith(`${prefix}.`)) disabled = value;
+      if (prefix === '' || target === prefix || target.startsWith(`${prefix}.`)) result = value;
     }
-    return disabled;
+    return result;
   };
+
+/** 後から指定したものが優先。どこにも指定されていない項目は活性 */
+export const createIsDisabled = (ops: readonly Op[]): IsDisabled => createMatcher(ops);
 
 export const sameOps = (a: readonly Op[], b: readonly Op[]) =>
   a.length === b.length && a.every(([p, d], i) => p === b[i][0] && d === b[i][1]);
@@ -84,15 +107,26 @@ export const sameOps = (a: readonly Op[], b: readonly Op[]) =>
 const emptyOf = (value: unknown) =>
   typeof value === 'string' ? '' : typeof value === 'boolean' ? false : Array.isArray(value) ? [] : undefined;
 
-/** value（path の値）の配下で、非活性の項目を空の値にした [パス, 値] を列挙 */
-export function clearEntries(path: string, value: unknown, isDisabled: IsDisabled): [FormPath, unknown][] {
+/** value（path の値）の配下で、shouldClear の項目を空の値にした [パス, 値] を列挙（既に空のものは除く） */
+function emptyEntries(path: string, value: unknown, shouldClear: (path: string) => boolean): [FormPath, unknown][] {
   const isLeaf = typeof value !== 'object' || value === null || (Array.isArray(value) && value.every((v) => typeof v !== 'object'));
   if (isLeaf) {
     const empty = emptyOf(value);
     const changed = Array.isArray(value) ? value.length > 0 : value !== empty;
-    return empty !== undefined && changed && isDisabled(path as FormPath) ? [[path as FormPath, empty]] : [];
+    return empty !== undefined && changed && shouldClear(path) ? [[path as FormPath, empty]] : [];
   }
-  return Object.entries(value).flatMap(([k, v]) => clearEntries(`${path}.${k}`, v, isDisabled));
+  return Object.entries(value).flatMap(([k, v]) => emptyEntries(`${path}.${k}`, v, shouldClear));
+}
+
+/** clear / keep の指定から、クリアする [パス, 空の値] を列挙 */
+export function clearEntries(clearOps: readonly Op[], getValue: (path: FormPath) => unknown): [FormPath, unknown][] {
+  const shouldClear = createMatcher(clearOps);
+  const entries = new Map<FormPath, unknown>();
+  for (const [root, clear] of clearOps) {
+    if (!clear) continue;
+    for (const [path, value] of emptyEntries(root, getValue(root as FormPath), shouldClear)) entries.set(path, value);
+  }
+  return [...entries];
 }
 
 /** 非活性の項目のエラーを取り除く（非活性の項目はユーザーが直せないため、検証しない） */

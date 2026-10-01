@@ -11,6 +11,11 @@ import {
 import type { PageMode } from '../utils/pageMode';
 import type { ContentFormValues } from '../utils/schema';
 
+type Options = {
+  /** controller の selectSection が呼ばれたとき */
+  onSelectSection: (index: number) => void;
+};
+
 /**
  * controller を入力値が変わるたびに実行し、各項目の活性状態を返す。
  * 実行自体は watch のコールバック内なので再レンダリングしない。
@@ -20,26 +25,26 @@ export function useFieldControl(
   { watch, getValues, setValue }: UseFormReturn<ContentFormValues>,
   mode: PageMode,
   controller: FieldController,
+  options: Options,
 ): IsDisabled {
   const controllerRef = useRef(controller);
   controllerRef.current = controller;
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const [ops, setOps] = useState(() => evaluate(controller, { values: getValues(), mode }).ops);
 
   useEffect(() => {
-    /** clearDisabled による setValue で、自分自身が再度呼ばれるのを防ぐ */
+    /** clear による setValue で、自分自身が再度呼ばれるのを防ぐ */
     let applying = false;
 
     const update = (changed?: string) => {
-      let { ops: next, clears } = evaluate(controllerRef.current, { values: getValues(), mode, changed });
-      if (clears.length) {
+      let { ops: next, clearOps, section } = evaluate(controllerRef.current, { values: getValues(), mode, changed });
+      if (section !== undefined) optionsRef.current.onSelectSection(section);
+      const entries = clearEntries(clearOps, (path) => getValues(path));
+      if (entries.length) {
         applying = true;
-        for (const [target, opCount] of clears) {
-          const isDisabled = createIsDisabled(next.slice(0, opCount));
-          for (const [path, value] of clearEntries(target, getValues(target), isDisabled)) {
-            setValue(path, value as never, { shouldDirty: true });
-          }
-        }
+        for (const [path, value] of entries) setValue(path, value as never, { shouldDirty: true });
         applying = false;
         // クリアした値で改めて判定する
         next = evaluate(controllerRef.current, { values: getValues(), mode }).ops;

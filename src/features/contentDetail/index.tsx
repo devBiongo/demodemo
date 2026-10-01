@@ -20,8 +20,10 @@ import { MAIN_TABS, type ErrorLocation, type MainTab } from './utils/tabs';
 const FILL = { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' } as const;
 
 /**
- * 画面項目の活性 / 非活性を決める。入力値が変わるたびに呼ばれる。
- * - 何も指定しない項目は活性
+ * 画面項目の活性 / 非活性と、値のクリアを決める。入力値が変わるたびに呼ばれる。
+ * - disable / enable：活性状態だけを変える（値はそのまま）。何も指定しない項目は活性
+ * - clear / keep：値だけを空にする（活性状態とは無関係）。通常は changed で条件を付ける
+ * - selectSection：コンテンツ画面のタブを選択する。通常は changed で条件を付ける
  * - 同じ項目に複数回指定した場合は、後から呼んだものが優先
  * - 親を指定すると配下すべて（例：'content' はコンテンツ画面の全項目）
  * - 非活性の項目は送信時の検証をしない
@@ -32,11 +34,16 @@ const controlFields: FieldController = ({ values, mode, changed }, field) => {
   // システムが設定する項目
   field.disable('url', 'attributes.id', 'attributes.registeredAt', 'attributes.updatedAt', 'attributes.creator', 'attributes.updater');
 
-  // コンテンツ種別「お知らせ」→ コンテンツ画面は概要文以外をクリアして非活性
+  // コンテンツ種別「お知らせ」→ コンテンツ画面は 1 つ目のタブの概要文以外を非活性
   if (attributes.contentType === 'notice') {
     field.disable('content', 'action.fileInsert');
-    content.sections.forEach((_, i) => field.enable(sectionField(i, 'summary')));
-    if (changed === 'attributes.contentType') field.clearDisabled('content');
+    field.enable(sectionField(0, 'summary'));
+    // お知らせに切り替えた時点で、同じ範囲の値をクリアし、入力できる 1 つ目のタブを選択
+    if (changed === 'attributes.contentType') {
+      field.clear('content');
+      field.keep(sectionField(0, 'summary'));
+      field.selectSection(0);
+    }
   }
 
   // 「ChatGPTを使用」→ 内容は自動生成するため入力不可
@@ -86,7 +93,7 @@ export function ContentDetailPage({ mode }: Props) {
     if (location.section !== undefined) setSectionIndex(location.section);
   }, []);
   const { onSubmit, onDraft, onCancel } = useFormActions(form, { onInvalidLocated });
-  const isDisabled = useFieldControl(form, mode, controlFields);
+  const isDisabled = useFieldControl(form, mode, controlFields, { onSelectSection: setSectionIndex });
   // form 始终是同一个对象，所以只在活性状态变化时才生成新值
   const context = useMemo(() => ({ form, isDisabled }), [form, isDisabled]);
 

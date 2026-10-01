@@ -32,7 +32,8 @@ export function CompareDialog({ initialIndex, onClose }: Props) {
       <DialogContent>
         <Tabs value={index} onChange={(_, v: number) => setIndex(v)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           {Array.from({ length: SECTION_COUNT }, (_, i) => (
-            <Tab key={i} value={i} label={`Tab${i + 1}`} />
+            // 与画面上的 section tab 一致：编号 + 当前的 tab 名（没有名字时只显示编号）
+            <Tab key={i} value={i} label={`${i + 1} ${after.sections[i].name}`.trim()} />
           ))}
         </Tabs>
 

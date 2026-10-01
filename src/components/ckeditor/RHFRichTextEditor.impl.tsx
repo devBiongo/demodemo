@@ -10,6 +10,14 @@ import type { RHFRichTextEditorProps } from './RHFRichTextEditor';
 const TOOLBAR_HEIGHT = 40;
 
 /**
+ * 非活性時はツールバーに inert を付け、クリックもフォーカスもできないようにする
+ * （CKEditor の読み取り専用モードではボタンが灰色になるだけで、フォーカスは当たる）。
+ * 編集領域には付けない：inert の要素はスクロールもできなくなり、長い本文を読めないため
+ */
+const applyToolbarDisabled = (editor: ClassicEditor, disabled: boolean) =>
+  editor.ui.view.toolbar.element?.toggleAttribute('inert', disabled);
+
+/**
  * 非受控的 CKEditor：
  * - 输入时不触发 React 渲染，按 debounceMs 防抖写回表单（getData 需要序列化整篇内容，开销较大）
  * - 失焦 / 卸载时立即写回
@@ -36,6 +44,8 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
   const pendingRef = useRef(false);
   const suppressRef = useRef(false);
   const timerRef = useRef<number>();
+  const disabledRef = useRef(!!disabled);
+  disabledRef.current = !!disabled;
 
   const flushRef = useRef(() => {
     window.clearTimeout(timerRef.current);
@@ -65,6 +75,10 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
   // 卸载前写回（父组件的 cleanup 先于 CKEditor 自身的销毁执行）
   useEffect(() => () => flushRef.current(), []);
 
+  useEffect(() => {
+    if (editorRef.current) applyToolbarDisabled(editorRef.current, !!disabled);
+  }, [disabled]);
+
   const editableHeight = typeof height === 'number' ? height - TOOLBAR_HEIGHT : `calc(${height} - ${TOOLBAR_HEIGHT}px)`;
 
   return (
@@ -74,6 +88,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
         // 非活性時：他の非活性入力欄と同じ灰色の背景 + 薄い文字
         ...(disabled && {
           '& .ck.ck-editor__main > .ck-editor__editable': { bgcolor: 'grey.100', color: 'text.disabled' },
+          '& .ck.ck-toolbar': { bgcolor: 'grey.100' },
         }),
       }}
     >
@@ -84,6 +99,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
         disabled={disabled}
         onReady={(editor) => {
           editorRef.current = editor;
+          applyToolbarDisabled(editor, disabledRef.current);
           // 加载期间表单值可能已被修改（例如切换模式时另一个编辑器刚写回）
           if (formValueRef.current !== initialData) syncFromForm(editor, formValueRef.current);
           onReady?.(editor);
