@@ -53,7 +53,7 @@ export type FieldControlApi = {
 };
 
 /** 画面項目の活性 / 非活性・値のクリアを決める関数 */
-export type FieldController = (ctx: FieldControlContext, field: FieldControlApi) => void;
+export type FieldRules = (ctx: FieldControlContext, field: FieldControlApi) => void;
 
 export type IsDisabled = (target: FieldTarget) => boolean;
 
@@ -69,11 +69,11 @@ export type Evaluation = {
   section?: number;
 };
 
-export function evaluate(controller: FieldController, ctx: FieldControlContext): Evaluation {
+export function evaluate(rules: FieldRules, ctx: FieldControlContext): Evaluation {
   const ops: Op[] = [];
   const clearOps: Op[] = [];
   let section: number | undefined;
-  controller(ctx, {
+  rules(ctx, {
     disable: (...targets) => targets.forEach((t) => ops.push([t, true])),
     enable: (...targets) => targets.forEach((t) => ops.push([t, false])),
     disableAll: () => ops.push(['', true]),

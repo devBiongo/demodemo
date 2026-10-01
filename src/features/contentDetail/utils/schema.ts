@@ -30,7 +30,7 @@ export const sectionSchema = z.object({
   related: z.string(),
   officialSite: z.string(),
   manualRecommend: z.string(),
-  // ''：クリアされた状態（index.tsx の controlFields）
+  // ''：クリアされた状態（fieldRules.ts）
   caRule: z.enum(['html', 'faq', 'none', '']),
   searchable: z.boolean(),
   keepTabUpdatedAt: z.boolean(),

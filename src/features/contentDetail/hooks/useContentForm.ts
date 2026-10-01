@@ -5,7 +5,7 @@ import type { ContentFormValues } from '../utils/schema';
 
 type ContentDetailContextValue = {
   form: UseFormReturn<ContentFormValues>;
-  /** 各項目の活性状態（index.tsx の controlFields による） */
+  /** 各項目の活性状態（fieldRules.ts による） */
   isDisabled: IsDisabled;
 };
 

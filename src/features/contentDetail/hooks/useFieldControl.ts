@@ -5,41 +5,41 @@ import {
   createIsDisabled,
   evaluate,
   sameOps,
-  type FieldController,
+  type FieldRules,
   type IsDisabled,
 } from '../utils/fieldControl';
 import type { PageMode } from '../utils/pageMode';
 import type { ContentFormValues } from '../utils/schema';
 
 type Options = {
-  /** controller の selectSection が呼ばれたとき */
+  /** rules の selectSection が呼ばれたとき */
   onSelectSection: (index: number) => void;
 };
 
 /**
- * controller を入力値が変わるたびに実行し、各項目の活性状態を返す。
+ * rules（fieldRules.ts）を入力値が変わるたびに実行し、各項目の活性状態を返す。
  * 実行自体は watch のコールバック内なので再レンダリングしない。
  * 結果（活性状態）が変わったときだけ state を更新する。
  */
 export function useFieldControl(
   { watch, getValues, setValue }: UseFormReturn<ContentFormValues>,
   mode: PageMode,
-  controller: FieldController,
+  rules: FieldRules,
   options: Options,
 ): IsDisabled {
-  const controllerRef = useRef(controller);
-  controllerRef.current = controller;
+  const rulesRef = useRef(rules);
+  rulesRef.current = rules;
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
-  const [ops, setOps] = useState(() => evaluate(controller, { values: getValues(), mode }).ops);
+  const [ops, setOps] = useState(() => evaluate(rules, { values: getValues(), mode }).ops);
 
   useEffect(() => {
     /** clear による setValue で、自分自身が再度呼ばれるのを防ぐ */
     let applying = false;
 
     const update = (changed?: string) => {
-      let { ops: next, clearOps, section } = evaluate(controllerRef.current, { values: getValues(), mode, changed });
+      let { ops: next, clearOps, section } = evaluate(rulesRef.current, { values: getValues(), mode, changed });
       if (section !== undefined) optionsRef.current.onSelectSection(section);
       const entries = clearEntries(clearOps, (path) => getValues(path));
       if (entries.length) {
@@ -47,7 +47,7 @@ export function useFieldControl(
         for (const [path, value] of entries) setValue(path, value as never, { shouldDirty: true });
         applying = false;
         // クリアした値で改めて判定する
-        next = evaluate(controllerRef.current, { values: getValues(), mode }).ops;
+        next = evaluate(rulesRef.current, { values: getValues(), mode }).ops;
       }
       setOps((prev) => (sameOps(prev, next) ? prev : next));
     };
