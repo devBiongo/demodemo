@@ -3,7 +3,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, Tab, Tabs, Typograph
 import { DiffViewer } from '../diff-viewer';
 import { useContentForm } from '../../hooks/useContentForm';
 import { useFieldAccess } from '../../hooks/useFieldAccess';
-import { SECTION_COUNT } from '../../utils/schema';
+import { SECTION_COUNT } from '../../models/schema';
 
 type Props = {
   /** 最初に表示する section */

@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
-import type { IsDisabled } from '../utils/fieldControl';
-import type { ContentFormValues } from '../utils/schema';
+import type { IsDisabled } from '../models/fieldControl';
+import type { ContentFormValues } from '../models/schema';
 
 type ContentDetailContextValue = {
   form: UseFormReturn<ContentFormValues>;

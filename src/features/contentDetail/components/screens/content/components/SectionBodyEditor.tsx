@@ -9,7 +9,7 @@ import {
 } from "../../../hybrid-editor";
 import { useContentForm } from "../../../../hooks/useContentForm";
 import { useFieldAccess } from "../../../../hooks/useFieldAccess";
-import { sectionField } from "../../../../utils/fieldPath";
+import { sectionField } from "../../../../models/schema";
 import { CompareDialog } from "../../../modals/CompareDialog";
 
 /**

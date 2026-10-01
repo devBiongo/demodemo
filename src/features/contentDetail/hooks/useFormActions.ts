@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useFormState, type SubmitErrorHandler, type SubmitHandler, type UseFormReturn } from 'react-hook-form';
-import type { ContentFormValues } from '../utils/schema';
-import { locateFirstError, type ErrorLocation } from '../utils/tabs';
+import type { ContentFormValues } from '../models/schema';
+import { locateFirstError, type ErrorLocation } from '../models/page';
 
 type Options = {
   /** 検証エラー時に、最初のエラーがあるタブ / section を渡す */

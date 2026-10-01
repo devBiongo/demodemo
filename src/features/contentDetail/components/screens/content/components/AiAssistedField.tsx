@@ -3,7 +3,7 @@ import type { FieldPathByValue } from 'react-hook-form';
 import { CharCount, RHFCheckbox, RHFTextField } from '../../../form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
-import type { ContentFormValues } from '../../../../utils/schema';
+import type { ContentFormValues } from '../../../../models/schema';
 
 type Props = {
   aiName: FieldPathByValue<ContentFormValues, boolean>;

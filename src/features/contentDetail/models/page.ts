@@ -1,6 +1,9 @@
 import type { FieldErrors } from 'react-hook-form';
 import type { ContentFormValues } from './schema';
 
+/** 画面モード：新規作成 / 承認（参照のみ） / 編集 */
+export type PageMode = 'create' | 'approval' | 'edit';
+
 export type MainTab = 'content' | 'attributes' | 'category' | 'history';
 
 export const MAIN_TABS: { value: MainTab; label: string }[] = [

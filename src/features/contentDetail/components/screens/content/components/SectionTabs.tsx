@@ -3,8 +3,7 @@ import { Box, InputBase, lighten, Stack, Tooltip } from '@mui/material';
 import { useController } from 'react-hook-form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
-import { sectionField } from '../../../../utils/fieldPath';
-import { SECTION_COUNT } from '../../../../utils/schema';
+import { sectionField, SECTION_COUNT } from '../../../../models/schema';
 
 type Props = {
   value: number;

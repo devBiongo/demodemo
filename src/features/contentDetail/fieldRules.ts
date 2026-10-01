@@ -1,5 +1,5 @@
-import type { FieldRules } from "./utils/fieldControl";
-import { sectionField } from "./utils/fieldPath";
+import type { FieldRules } from "./models/fieldControl";
+import { sectionField } from "./models/schema";
 
 /**
  * 画面項目の活性 / 非活性と、値のクリアを決める。入力値が変わるたびに呼ばれる。

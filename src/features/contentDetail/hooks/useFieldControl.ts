@@ -7,9 +7,9 @@ import {
   sameOps,
   type FieldRules,
   type IsDisabled,
-} from '../utils/fieldControl';
-import type { PageMode } from '../utils/pageMode';
-import type { ContentFormValues } from '../utils/schema';
+} from '../models/fieldControl';
+import type { PageMode } from '../models/page';
+import type { ContentFormValues } from '../models/schema';
 
 type Options = {
   /** rules の selectSection が呼ばれたとき */

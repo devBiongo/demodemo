@@ -1,5 +1,5 @@
 import type { FieldErrors, FieldPath, Resolver } from 'react-hook-form';
-import type { PageMode } from './pageMode';
+import type { PageMode } from './page';
 import type { ContentFormValues } from './schema';
 
 /** 入力項目以外のボタン */

@@ -9,12 +9,11 @@ import { PropertyScreen } from "./components/screens/property";
 import { ContentDetailContext } from "./hooks/useContentForm";
 import { useFieldControl } from "./hooks/useFieldControl";
 import { useFormActions } from "./hooks/useFormActions";
-import { mockContent } from "./utils/defaults";
+import { mockContent } from "./models/defaults";
 import { fieldRules } from "./fieldRules";
-import { createIsDisabled, evaluate, skipDisabledErrors } from "./utils/fieldControl";
-import type { PageMode } from "./utils/pageMode";
-import { contentFormSchema, type ContentFormValues } from "./utils/schema";
-import { MAIN_TABS, type ErrorLocation, type MainTab } from "./utils/tabs";
+import { createIsDisabled, evaluate, skipDisabledErrors } from "./models/fieldControl";
+import { MAIN_TABS, type ErrorLocation, type MainTab, type PageMode } from "./models/page";
+import { contentFormSchema, type ContentFormValues } from "./models/schema";
 
 /** 縦方向の flex コンテナで残りの高さを埋める（minHeight: 0 で内部にスクロールバーを出せる） */
 const FILL = {

@@ -20,7 +20,7 @@ import {
   STATUS_OPTIONS,
   SUPPORT_CHAT_OPTIONS,
   VISIBILITY_OPTIONS,
-} from '../../../utils/options';
+} from '../../../models/options';
 import { FormRow } from './FormRow';
 
 const FIELD_WIDTH = 360;

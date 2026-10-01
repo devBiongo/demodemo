@@ -91,7 +91,7 @@ export const attributesSchema = z
 
 // ---------- 全体 ----------
 
-// 非活性の項目はチェックしない（エラーを除外する）：utils/fieldControl.ts の skipDisabledErrors
+// 非活性の項目はチェックしない（エラーを除外する）：models/fieldControl.ts の skipDisabledErrors
 export const contentFormSchema = z.object({
   url: z.string(),
   content: contentSchema,
@@ -102,3 +102,7 @@ export type ContentFormValues = z.infer<typeof contentFormSchema>;
 export type Content = z.infer<typeof contentSchema>;
 export type Section = z.infer<typeof sectionSchema>;
 export type Attributes = z.infer<typeof attributesSchema>;
+
+/** index 番目の section の項目のパスを作る。例：content.sections.0.summary */
+export const sectionField = <K extends keyof Section>(index: number, key: K) =>
+  `content.sections.${index}.${key}` as const;

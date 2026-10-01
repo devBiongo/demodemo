@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { RHFTextField } from '../../../form';
 import { useContentForm } from '../../../../hooks/useContentForm';
 import { useFieldAccess } from '../../../../hooks/useFieldAccess';
-import { sectionField } from '../../../../utils/fieldPath';
+import { sectionField } from '../../../../models/schema';
 
 type Props = {
   index: number;

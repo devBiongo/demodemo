@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { HtmlPreview } from '../HtmlPreview';
 import { useContentForm } from '../../hooks/useContentForm';
-import { sectionField } from '../../utils/fieldPath';
+import { sectionField } from '../../models/schema';
 
 type Props = {
   sectionIndex: number;
