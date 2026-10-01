@@ -19,6 +19,7 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
   name,
   control,
   height,
+  disabled,
   onReady,
   debounceMs = 300,
 }: RHFRichTextEditorProps<T>) {
@@ -67,11 +68,20 @@ export default function RHFRichTextEditorImpl<T extends FieldValues>({
   const editableHeight = typeof height === 'number' ? height - TOOLBAR_HEIGHT : `calc(${height} - ${TOOLBAR_HEIGHT}px)`;
 
   return (
-    <Box sx={{ '& .ck-editor__editable_inline': { height: editableHeight, overflowY: 'auto' } }}>
+    <Box
+      sx={{
+        '& .ck-editor__editable_inline': { height: editableHeight, overflowY: 'auto' },
+        // 非活性時：他の非活性入力欄と同じ灰色の背景 + 薄い文字
+        ...(disabled && {
+          '& .ck.ck-editor__main > .ck-editor__editable': { bgcolor: 'grey.100', color: 'text.disabled' },
+        }),
+      }}
+    >
       <CKEditor
         editor={ClassicEditor}
         config={EDITOR_CONFIG}
         data={initialData}
+        disabled={disabled}
         onReady={(editor) => {
           editorRef.current = editor;
           // 加载期间表单值可能已被修改（例如切换模式时另一个编辑器刚写回）

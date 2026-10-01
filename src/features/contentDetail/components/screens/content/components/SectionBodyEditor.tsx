@@ -7,6 +7,7 @@ import type { ClassicEditor } from "ckeditor5";
 import { RHFRichTextEditor } from "../../../../../../components/ckeditor";
 import { RHFCodeEditor } from "../../../../../../components/monaco";
 import { useContentForm } from "../../../../hooks/useContentForm";
+import { useFieldAccess } from "../../../../hooks/useFieldAccess";
 import { sectionField } from "../../../../utils/fieldPath";
 import { CompareDialog } from "../../../modals/CompareDialog";
 
@@ -29,6 +30,7 @@ type InsertHtml = (html: string) => void;
 export function SectionBodyEditor({ index, toolbarStart }: Props) {
   const { control } = useContentForm();
   const name = sectionField(index, "body");
+  const { isDisabled } = useFieldAccess();
 
   const [mode, setMode] = useState<Mode>("source");
   const [fullscreen, setFullscreen] = useState(false);
@@ -93,19 +95,23 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
         {toolbarStart}
         <Box sx={{ flex: 1 }} />
         <Tooltip title={fullscreen ? "全画面を終了" : "全画面"}>
-          <IconButton color="primary" onClick={() => setFullscreen((v) => !v)}>
-            {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-          </IconButton>
+          {/* 非活性のボタンはイベントを受け取らないため、Tooltip 用に span で包む */}
+          <span>
+            <IconButton color="primary" disabled={isDisabled("action.fullscreen")} onClick={() => setFullscreen((v) => !v)}>
+              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+            </IconButton>
+          </span>
         </Tooltip>
-        <Button variant="contained" onClick={switchMode}>
+        <Button variant="contained" disabled={isDisabled("action.switchMode")} onClick={switchMode}>
           表示切替
         </Button>
         {/* 点击按钮时编辑器失焦，未写回的内容会先写回表单 */}
-        <Button variant="contained" onClick={() => setCompareOpen(true)}>
+        <Button variant="contained" disabled={isDisabled("action.compare")} onClick={() => setCompareOpen(true)}>
           比較
         </Button>
         <Button
           variant="contained"
+          disabled={isDisabled("action.fileInsert")}
           onClick={() => fileInputRef.current?.click()}
         >
           ファイル挿入
@@ -130,12 +136,14 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
             height={height}
             path={`section-${index}.html`}
             onMount={handleMonacoMount}
+            disabled={isDisabled(name)}
           />
         ) : (
           <RHFRichTextEditor
             control={control}
             name={name}
             height={height}
+            disabled={isDisabled(name)}
             onReady={handleCkEditorReady}
           />
         )}

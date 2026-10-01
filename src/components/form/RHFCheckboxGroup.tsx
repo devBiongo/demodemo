@@ -6,10 +6,11 @@ type Props<T extends FieldValues> = {
   name: FieldPathByValue<T, string[]>;
   control: Control<T>;
   options: readonly Option[];
+  disabled?: boolean;
   sx?: SxProps<Theme>;
 };
 
-export function RHFCheckboxGroup<T extends FieldValues>({ name, control, options, sx }: Props<T>) {
+export function RHFCheckboxGroup<T extends FieldValues>({ name, control, options, disabled, sx }: Props<T>) {
   const { field } = useController({ name, control });
   const selected: string[] = field.value ?? [];
 
@@ -27,6 +28,7 @@ export function RHFCheckboxGroup<T extends FieldValues>({ name, control, options
         <FormControlLabel
           key={o.value}
           label={o.label}
+          disabled={disabled}
           control={
             <Checkbox checked={selected.includes(o.value)} onChange={(_, c) => toggle(o.value, c)} />
           }

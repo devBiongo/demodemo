@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Box, InputBase, lighten, Stack, Tooltip } from '@mui/material';
 import { useController } from 'react-hook-form';
 import { useContentForm } from '../../../../hooks/useContentForm';
+import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import { sectionField } from '../../../../utils/fieldPath';
 import { SECTION_COUNT } from '../../../../utils/schema';
 
@@ -37,10 +38,12 @@ type TabProps = {
 /** tab 名可直接编辑；只订阅自己的 name 字段 */
 const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProps) {
   const { control } = useContentForm();
+  const name = sectionField(index, 'name');
   const {
     field,
     fieldState: { error },
-  } = useController({ control, name: sectionField(index, 'name') });
+  } = useController({ control, name });
+  const disabled = useFieldAccess().isDisabled(name);
 
   const highlighted = active || !!error;
   const accent = error ? 'error.main' : 'primary.main';
@@ -65,9 +68,14 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
         // 白色卡片；选中（或出错）时整圈边框变为主色（错误色）。
         // 用 border + 外侧 1px 阴影呈现 2px 的效果：尺寸不变，内部间距也不会被压缩
         // 选中（或出错）时铺一层很淡的主色（错误色）。
-        // 用 lighten 混入白色得到不透明的颜色，避免半透明色叠在灰色页面背景上发灰
+        // 用 lighten 混入白色得到不透明的颜色，避免半透明色叠在灰色页面背景上发灰。
+        // 非活性时为灰色背景（与主题中非活性输入框的颜色一致），选中状态仍由边框和圆圈表示
         bgcolor: (t) =>
-          highlighted ? lighten(error ? t.palette.error.main : t.palette.primary.main, 0.94) : t.palette.background.paper,
+          disabled
+            ? t.palette.grey[100]
+            : highlighted
+              ? lighten(error ? t.palette.error.main : t.palette.primary.main, 0.94)
+              : t.palette.background.paper,
         borderRadius: 1,
         border: 1,
         borderColor: highlighted ? accent : 'divider',
@@ -100,14 +108,19 @@ const SectionTab = memo(function SectionTab({ index, active, onSelect }: TabProp
         <InputBase
           {...field}
           inputRef={field.ref}
+          disabled={disabled}
           onFocus={() => onSelect(index)}
           sx={{
             flex: 1,
             minWidth: 0,
-            // 文字不随选中状态变化（只有出错时变红）
+            // 文字不随选中状态变化（只有出错时变红）。非活性时的灰色文字由 MUI 处理
             fontSize: 14,
             color: error ? 'error.main' : 'text.primary',
             '& .MuiInputBase-input': { px: 0.75, py: 0.5 },
+            // 非活性时点击穿透到 tab 本身，仍可切换 section
+            pointerEvents: disabled ? 'none' : undefined,
+            // 不使用主题里非活性输入框的灰色背景（tab 本身已有背景）
+            '&.Mui-disabled': { bgcolor: 'transparent' },
           }}
         />
       </Tooltip>

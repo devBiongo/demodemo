@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
-import { useFormState, type SubmitErrorHandler, type SubmitHandler } from 'react-hook-form';
+import { useFormState, type SubmitErrorHandler, type SubmitHandler, type UseFormReturn } from 'react-hook-form';
 import type { ContentFormValues } from '../utils/schema';
 import { locateFirstError, type ErrorLocation } from '../utils/tabs';
-import { useContentForm } from './useContentForm';
 
 type Options = {
   /** 校验失败时，传入第一个错误所在的 tab / section */
@@ -13,8 +12,8 @@ type Options = {
  * 表单的提交 / 下書 / キャンセル 处理。
  * 注意：内部订阅了 isDirty，调用本 hook 的组件会随之重渲染（下层的 tab 都用 memo 包裹，不受影响）
  */
-export function useFormActions({ onInvalidLocated }: Options) {
-  const { control, handleSubmit, getValues, reset } = useContentForm();
+export function useFormActions(form: UseFormReturn<ContentFormValues>, { onInvalidLocated }: Options) {
+  const { control, handleSubmit, getValues, reset } = form;
   const { isDirty } = useFormState({ control });
 
   const onValid: SubmitHandler<ContentFormValues> = async (values) => {

@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, Tab, Tabs, Typography } from '@mui/material';
 import { DiffViewer } from '../../../../components/diff-viewer';
 import { useContentForm } from '../../hooks/useContentForm';
+import { useFieldAccess } from '../../hooks/useFieldAccess';
 import { SECTION_COUNT } from '../../utils/schema';
 
 type Props = {
@@ -18,6 +19,7 @@ const LABEL_WIDTH = 100;
  */
 export function CompareDialog({ initialIndex, onClose }: Props) {
   const { getValues, formState } = useContentForm();
+  const { isDisabled } = useFieldAccess();
   const [index, setIndex] = useState(initialIndex);
   const [after] = useState(() => getValues('content'));
   const before = formState.defaultValues?.content;
@@ -60,7 +62,7 @@ export function CompareDialog({ initialIndex, onClose }: Props) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={onClose}>
+        <Button variant="contained" disabled={isDisabled('action.compareClose')} onClick={onClose}>
           閉じる
         </Button>
       </DialogActions>

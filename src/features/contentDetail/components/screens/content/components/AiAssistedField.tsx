@@ -1,7 +1,8 @@
 import { Box, Stack } from '@mui/material';
-import { useWatch, type FieldPathByValue } from 'react-hook-form';
+import type { FieldPathByValue } from 'react-hook-form';
 import { CharCount, RHFCheckbox, RHFTextField } from '../../../../../../components/form';
 import { useContentForm } from '../../../../hooks/useContentForm';
+import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import type { ContentFormValues } from '../../../../utils/schema';
 
 type Props = {
@@ -11,16 +12,15 @@ type Props = {
   minRows?: number;
 };
 
-/** 「ChatGPTを使用」チェック時は内容を自動生成するため入力不可にする */
+/** 「ChatGPTを使用」+ テキスト。チェック時の入力不可はルール（fieldRules.ts）で制御 */
 export function AiAssistedField({ aiName, textName, label, minRows = 2 }: Props) {
   const { control } = useContentForm();
-  // 只订阅自己的 checkbox，勾选变化时只有本组件重渲染
-  const useAi = useWatch({ control, name: aiName });
+  const { isDisabled } = useFieldAccess();
 
   return (
     <Stack direction="row" spacing={2} alignItems="flex-start">
       <Box sx={{ width: 150, flexShrink: 0, pt: 0.5 }}>
-        <RHFCheckbox control={control} name={aiName} label="ChatGPTを使用" />
+        <RHFCheckbox control={control} name={aiName} label="ChatGPTを使用" disabled={isDisabled(aiName)} />
       </Box>
       <Box sx={{ position: 'relative', flex: 1, minWidth: 0 }}>
         <RHFTextField
@@ -30,7 +30,7 @@ export function AiAssistedField({ aiName, textName, label, minRows = 2 }: Props)
           multiline
           minRows={minRows}
           fullWidth
-          disabled={useAi}
+          disabled={isDisabled(textName)}
           // 底部留出显示文字数量的空间，避免与最后一行文字重叠
           sx={{ '& .MuiInputBase-multiline': { pb: 2.5 } }}
         />

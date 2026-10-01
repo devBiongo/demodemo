@@ -7,6 +7,7 @@ import {
   type MutableRefObject,
 } from "react";
 import Editor, { type EditorProps, type OnMount } from "@monaco-editor/react";
+import { Box, type SxProps, type Theme } from "@mui/material";
 import {
   useController,
   type Control,
@@ -24,6 +25,28 @@ const DEFAULT_OPTIONS: EditorProps["options"] = {
   automaticLayout: true,
   scrollBeyondLastLine: false,
 };
+
+/** 非活性時：入力・カーソル・行ハイライト等をすべて止める */
+const DISABLED_OPTIONS: EditorProps["options"] = {
+  readOnly: true,
+  domReadOnly: true,
+  renderLineHighlight: "none",
+  matchBrackets: "never",
+  occurrencesHighlight: "off",
+  selectionHighlight: false,
+  links: false,
+  hover: { enabled: false },
+};
+
+/** 非活性時の見た目：他の非活性入力欄と同じ灰色の背景 + 薄い文字、カーソルと「読み取り専用」メッセージを隠す */
+const disabledSx: SxProps<Theme> = (t) => ({
+  "& .monaco-editor": {
+    "--vscode-editor-background": t.palette.grey[100],
+    "--vscode-editorGutter-background": t.palette.grey[100],
+  },
+  "& .monaco-editor .view-lines, & .monaco-editor .margin-view-overlays": { opacity: 0.55 },
+  "& .monaco-editor .cursors-layer, & .monaco-editor-overlaymessage": { display: "none" },
+});
 
 type Pending = { model: editor.ITextModel; name: string };
 
@@ -45,6 +68,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   path,
   onMount,
   options,
+  disabled = false,
   debounceMs = 300,
 }: RHFCodeEditorProps<T>) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -141,12 +165,12 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
   }, []);
 
   const mergedOptions = useMemo(
-    () => ({ ...DEFAULT_OPTIONS, ...options }),
-    [options],
+    () => ({ ...DEFAULT_OPTIONS, ...options, ...(disabled ? DISABLED_OPTIONS : undefined) }),
+    [options, disabled],
   );
 
   return (
-    <>
+    <Box sx={disabled ? disabledSx : undefined}>
       {/* model 由 Editor 按 path 创建（初始为空），内容由 FieldBinding 同步 */}
       <Editor
         height={height}
@@ -163,7 +187,7 @@ export default function RHFCodeEditorImpl<T extends FieldValues>({
         ready={ready}
         syncRef={syncRef}
       />
-    </>
+    </Box>
   );
 }
 

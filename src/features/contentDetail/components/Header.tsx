@@ -3,6 +3,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { useFormState } from 'react-hook-form';
 import { RHFTextField } from '../../../components/form';
 import { useContentForm } from '../hooks/useContentForm';
+import { useFieldAccess } from '../hooks/useFieldAccess';
 
 type Props = {
   onDraft: () => void;
@@ -14,6 +15,7 @@ export const Header = memo(function Header({ onDraft, onCancel }: Props) {
   const { control } = useContentForm();
   // 只在这里订阅 isSubmitting，避免整个页面随之重渲染
   const { isSubmitting } = useFormState({ control });
+  const { isDisabled } = useFieldAccess();
 
   return (
     <Stack
@@ -26,15 +28,15 @@ export const Header = memo(function Header({ onDraft, onCancel }: Props) {
       <Typography color="primary" fontWeight={700}>
         URL
       </Typography>
-      <RHFTextField control={control} name="url" disabled sx={{ width: 420 }} />
+      <RHFTextField control={control} name="url" disabled={isDisabled('url')} sx={{ width: 420 }} />
       <Box sx={{ flex: 1 }} />
-      <Button type="submit" variant="contained" disabled={isSubmitting}>
+      <Button type="submit" variant="contained" disabled={isSubmitting || isDisabled('action.submit')}>
         OK
       </Button>
-      <Button variant="contained" onClick={onDraft} disabled={isSubmitting}>
+      <Button variant="contained" onClick={onDraft} disabled={isSubmitting || isDisabled('action.draft')}>
         下書
       </Button>
-      <Button variant="contained" onClick={onCancel} disabled={isSubmitting}>
+      <Button variant="contained" onClick={onCancel} disabled={isSubmitting || isDisabled('action.cancel')}>
         キャンセル
       </Button>
     </Stack>

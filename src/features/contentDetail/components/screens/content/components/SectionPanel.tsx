@@ -1,6 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import { RHFCheckbox, RHFSelect, RHFTextField } from '../../../../../../components/form';
 import { useContentForm } from '../../../../hooks/useContentForm';
+import { useFieldAccess } from '../../../../hooks/useFieldAccess';
 import { sectionField } from '../../../../utils/fieldPath';
 import { CA_RULE_OPTIONS, SECTION_FLAGS } from '../../../../utils/options';
 import type { Section } from '../../../../utils/schema';
@@ -16,6 +17,7 @@ type Props = {
  */
 export function SectionPanel({ index }: Props) {
   const { control } = useContentForm();
+  const { isDisabled } = useFieldAccess();
   const f = <K extends keyof Section>(key: K) => sectionField(index, key);
 
   return (
@@ -24,17 +26,17 @@ export function SectionPanel({ index }: Props) {
       <AiAssistedField aiName={f('keywordsUseAi')} textName={f('keywords')} label="キーワード" />
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 1.5 }}>
-        <RHFTextField control={control} name={f('toc')} label="目次" multiline minRows={1} maxRows={6} />
-        <RHFTextField control={control} name={f('related')} label="関連" multiline minRows={1} maxRows={6} />
-        <RHFTextField control={control} name={f('officialSite')} label="公式サイト" multiline minRows={1} maxRows={6} />
-        <RHFTextField control={control} name={f('manualRecommend')} label="手動レコメンド" multiline minRows={1} maxRows={6} />
+        <RHFTextField control={control} name={f('toc')} label="目次" disabled={isDisabled(f('toc'))} multiline minRows={1} maxRows={6} />
+        <RHFTextField control={control} name={f('related')} label="関連" disabled={isDisabled(f('related'))} multiline minRows={1} maxRows={6} />
+        <RHFTextField control={control} name={f('officialSite')} label="公式サイト" disabled={isDisabled(f('officialSite'))} multiline minRows={1} maxRows={6} />
+        <RHFTextField control={control} name={f('manualRecommend')} label="手動レコメンド" disabled={isDisabled(f('manualRecommend'))} multiline minRows={1} maxRows={6} />
       </Box>
 
-      <RHFSelect control={control} name={f('caRule')} label="CA変換ルール" options={CA_RULE_OPTIONS} sx={{ width: 180 }} />
+      <RHFSelect control={control} name={f('caRule')} label="CA変換ルール" disabled={isDisabled(f('caRule'))} options={CA_RULE_OPTIONS} sx={{ width: 180 }} />
 
       <Stack direction="row" flexWrap="wrap">
         {SECTION_FLAGS.map(({ key, label, help }) => (
-          <RHFCheckbox key={key} control={control} name={f(key)} label={label} help={help} />
+          <RHFCheckbox key={key} control={control} name={f(key)} label={label} help={help} disabled={isDisabled(f(key))} />
         ))}
       </Stack>
     </Stack>

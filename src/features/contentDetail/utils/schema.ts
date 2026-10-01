@@ -30,7 +30,8 @@ export const sectionSchema = z.object({
   related: z.string(),
   officialSite: z.string(),
   manualRecommend: z.string(),
-  caRule: z.enum(['html', 'faq', 'none']),
+  // ''：クリアされた状態（index.tsx の controlFields）
+  caRule: z.enum(['html', 'faq', 'none', '']),
   searchable: z.boolean(),
   keepTabUpdatedAt: z.boolean(),
   nda: z.boolean(),
@@ -90,6 +91,7 @@ export const attributesSchema = z
 
 // ---------- 全体 ----------
 
+// 非活性の項目はチェックしない（エラーを除外する）：utils/fieldControl.ts の skipDisabledErrors
 export const contentFormSchema = z.object({
   url: z.string(),
   content: contentSchema,
@@ -97,5 +99,6 @@ export const contentFormSchema = z.object({
 });
 
 export type ContentFormValues = z.infer<typeof contentFormSchema>;
+export type Content = z.infer<typeof contentSchema>;
 export type Section = z.infer<typeof sectionSchema>;
 export type Attributes = z.infer<typeof attributesSchema>;

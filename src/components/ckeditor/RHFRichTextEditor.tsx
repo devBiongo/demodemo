@@ -7,6 +7,8 @@ export type RHFRichTextEditorProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
   height: number | string;
+  /** 非活性（只读） */
+  disabled?: boolean;
   onReady?: (editor: ClassicEditor) => void;
   /** 编辑内容写回表单的防抖时间（ms）。失焦 / 卸载时会立即写回 */
   debounceMs?: number;

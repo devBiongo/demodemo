@@ -15,6 +15,8 @@ export type RHFCodeEditorProps<T extends FieldValues> = {
   path: string;
   onMount?: OnMount;
   options?: EditorProps['options'];
+  /** 非活性（只读） */
+  disabled?: boolean;
   /** 编辑内容写回表单的防抖时间（ms）。失焦 / 切换 name / 卸载时会立即写回 */
   debounceMs?: number;
 };
