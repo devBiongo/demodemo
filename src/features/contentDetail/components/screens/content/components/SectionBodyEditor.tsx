@@ -110,6 +110,9 @@ export function SectionBodyEditor({ index, toolbarStart }: Props) {
         height={height}
         path={`section-${index}.html`}
         disabled={isDisabled(name)}
+        // 工具栏的「ソース」按钮与「表示切替」切换同一个 mode
+        onModeChange={setMode}
+        modeSwitchDisabled={isDisabled("action.switchMode")}
       />
 
       {compareOpen && (
